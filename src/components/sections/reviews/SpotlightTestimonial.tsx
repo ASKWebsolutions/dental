@@ -6,7 +6,7 @@ export const SpotlightTestimonial: React.FC = () => {
   return (
     <section className="py-10 md:py-14 bg-bg overflow-hidden font-sans">
       <div className="max-w-6xl mx-auto my-12 px-4 md:px-8">
-        <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-xl border border-gray-100 relative overflow-hidden flex flex-col md:flex-row items-center gap-10">
+        <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-xl border border-gray-100 relative overflow-hidden flex flex-col md:flex-row items-center gap-10 shimmer-sheen">
           {/* Soft background glow top right */}
           <div className="absolute -top-12 -right-12 w-64 h-64 bg-amber-50/60 rounded-full blur-3xl pointer-events-none" />
 

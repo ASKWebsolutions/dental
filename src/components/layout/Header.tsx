@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, Phone, Calendar } from 'lucide-react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { navLinks } from '@/data/navLinks';
 import { siteConfig } from '@/data/siteConfig';
 import Logo from '../ui/Logo';
@@ -17,6 +18,26 @@ export const Header: React.FC<{ settings?: any }> = ({ settings }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 150, damping: 15 });
+  const springY = useSpring(y, { stiffness: 150, damping: 15 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - (rect.left + width / 2);
+    const mouseY = e.clientY - (rect.top + height / 2);
+    x.set(mouseX * 0.15); // subtle draw
+    y.set(mouseY * 0.15);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -122,13 +143,17 @@ export const Header: React.FC<{ settings?: any }> = ({ settings }) => {
             </a>
 
             {/* Primary Book Appointment CTA Button */}
-            <Link
-              href="/book-appointment"
-              className="hidden md:inline-flex items-center justify-center font-bold text-xs px-5 py-2.5 bg-[#003b1b] text-white hover:bg-[#002b13] transition-colors rounded-full shadow-sm gap-2 whitespace-nowrap shrink-0 cursor-pointer"
-            >
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Book Appointment</span>
-            </Link>
+            <motion.div style={{ x: springX, y: springY }} className="hidden md:inline-flex shrink-0">
+              <Link
+                href="/book-appointment"
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                className="inline-flex items-center justify-center font-bold text-xs px-5 py-2.5 bg-[#003b1b] text-white hover:bg-[#002b13] transition-colors rounded-full shadow-sm gap-2 whitespace-nowrap cursor-pointer"
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Book Appointment</span>
+              </Link>
+            </motion.div>
 
             {/* Mobile Menu Toggle */}
             <button

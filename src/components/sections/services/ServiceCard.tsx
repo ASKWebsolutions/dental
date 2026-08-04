@@ -67,7 +67,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, variants }) =
     <motion.div
       variants={variants}
       initial={prefersReducedMotion ? false : undefined}
-      className="relative group rounded-3xl overflow-hidden aspect-[4/5] shadow-lg group-hover:shadow-2xl transition-all duration-300"
+      className="relative group rounded-3xl overflow-hidden aspect-[4/5] shadow-lg group-hover:shadow-2xl transition-all duration-300 shimmer-sheen"
     >
       {/* Prominent Service Image */}
       <Image

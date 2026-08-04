@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { CheckCircle2, Loader } from 'lucide-react';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import Container from '@/components/ui/Container';
 import { services } from '@/data/services';
 
@@ -111,7 +112,9 @@ export const BeginTransformation: React.FC = () => {
                   key={stat.label}
                   className="bg-white rounded-2xl px-6 py-5 shadow-card border border-slate-100 text-left"
                 >
-                  <p className="font-serif font-bold text-3xl text-[#003b1b]">{stat.value}</p>
+                  <p className="font-serif font-bold text-3xl text-[#003b1b]">
+                    <AnimatedCounter value={stat.value} />
+                  </p>
                   <p className="text-xs text-gray-500 font-sans font-semibold mt-1">{stat.label}</p>
                 </div>
               ))}
@@ -147,16 +150,23 @@ export const BeginTransformation: React.FC = () => {
                       >
                         Full Name *
                       </label>
-                      <input
-                        id="transformation-name"
-                        type="text"
-                        value={formData.fullName}
-                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        placeholder="Your Name"
-                        className={`w-full px-4 py-3 rounded-xl bg-[#F0F0F0] border text-sm text-gray-900 font-sans placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary ${
-                          errors.fullName ? 'border-accent/40 focus:ring-accent' : 'border-transparent'
-                        }`}
-                      />
+                      <div className="relative w-full">
+                        <input
+                          id="transformation-name"
+                          type="text"
+                          value={formData.fullName}
+                          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                          placeholder="Your Name"
+                          className={`w-full px-4 py-3 rounded-xl bg-[#F0F0F0] border text-sm text-gray-900 font-sans placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 pr-10 ${
+                            errors.fullName ? 'border-accent/40 focus:ring-accent' : 'border-transparent'
+                          }`}
+                        />
+                        {formData.fullName.trim().length >= 2 && (
+                          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-600 flex items-center justify-center pointer-events-none animate-fade-in">
+                            <CheckCircle2 className="w-4 h-4" />
+                          </span>
+                        )}
+                      </div>
                       {errors.fullName && (
                         <span className="text-xs text-accent mt-1">{errors.fullName}</span>
                       )}
@@ -170,16 +180,23 @@ export const BeginTransformation: React.FC = () => {
                       >
                         Email Address *
                       </label>
-                      <input
-                        id="transformation-email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="name@example.com"
-                        className={`w-full px-4 py-3 rounded-xl bg-[#F0F0F0] border text-sm text-gray-900 font-sans placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary ${
-                          errors.email ? 'border-accent/40 focus:ring-accent' : 'border-transparent'
-                        }`}
-                      />
+                      <div className="relative w-full">
+                        <input
+                          id="transformation-email"
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          placeholder="name@example.com"
+                          className={`w-full px-4 py-3 rounded-xl bg-[#F0F0F0] border text-sm text-gray-900 font-sans placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 pr-10 ${
+                            errors.email ? 'border-accent/40 focus:ring-accent' : 'border-transparent'
+                          }`}
+                        />
+                        {formData.email.trim().length > 0 && /\S+@\S+\.\S+/.test(formData.email) && (
+                          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-600 flex items-center justify-center pointer-events-none animate-fade-in">
+                            <CheckCircle2 className="w-4 h-4" />
+                          </span>
+                        )}
+                      </div>
                       {errors.email && (
                         <span className="text-xs text-accent mt-1">{errors.email}</span>
                       )}
@@ -193,21 +210,28 @@ export const BeginTransformation: React.FC = () => {
                       >
                         Interested Service *
                       </label>
-                      <select
-                        id="transformation-service"
-                        value={formData.serviceInterest}
-                        onChange={(e) =>
-                          setFormData({ ...formData, serviceInterest: e.target.value })
-                        }
-                        className="w-full px-4 py-3 rounded-xl bg-[#F0F0F0] border border-transparent text-sm text-gray-900 font-sans focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
-                      >
-                        <option value="">Select a service</option>
-                        {services.map((srv) => (
-                          <option key={srv.id} value={srv.title}>
-                            {srv.title}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="relative w-full">
+                        <select
+                          id="transformation-service"
+                          value={formData.serviceInterest}
+                          onChange={(e) =>
+                            setFormData({ ...formData, serviceInterest: e.target.value })
+                          }
+                          className="w-full px-4 py-3 rounded-xl bg-[#F0F0F0] border border-transparent text-sm text-gray-900 font-sans focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 cursor-pointer pr-10"
+                        >
+                          <option value="">Select a service</option>
+                          {services.map((srv) => (
+                            <option key={srv.id} value={srv.title}>
+                              {srv.title}
+                            </option>
+                          ))}
+                        </select>
+                        {formData.serviceInterest && (
+                          <span className="absolute right-8 top-1/2 -translate-y-1/2 text-emerald-600 flex items-center justify-center pointer-events-none animate-fade-in">
+                            <CheckCircle2 className="w-4 h-4" />
+                          </span>
+                        )}
+                      </div>
                       {errors.serviceInterest && (
                         <span className="text-xs text-accent mt-1">{errors.serviceInterest}</span>
                       )}
@@ -227,7 +251,7 @@ export const BeginTransformation: React.FC = () => {
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder="Tell us about your goals..."
-                        className="w-full px-4 py-3 rounded-xl bg-[#F0F0F0] border border-transparent text-sm text-gray-900 font-sans placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                        className="w-full px-4 py-3 rounded-xl bg-[#F0F0F0] border border-transparent text-sm text-gray-900 font-sans placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 resize-none"
                       />
                     </div>
 

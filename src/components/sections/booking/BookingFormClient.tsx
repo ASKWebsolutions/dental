@@ -229,14 +229,21 @@ export const BookingFormClient: React.FC<BookingFormClientProps> = ({ services, 
                     <User className="w-3.5 h-3.5 text-primary" />
                     Patient Full Name *
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={patientName}
-                    onChange={(e) => setPatientName(e.target.value)}
-                    placeholder="e.g. Eleanor Vance"
-                    className="px-4 py-3 bg-[#F0F0F0] border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-xs"
-                  />
+                  <div className="relative w-full">
+                    <input
+                      type="text"
+                      required
+                      value={patientName}
+                      onChange={(e) => setPatientName(e.target.value)}
+                      placeholder="e.g. Eleanor Vance"
+                      className="w-full px-4 py-3 bg-[#F0F0F0] border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 text-xs pr-10"
+                    />
+                    {patientName.trim().length > 1 && (
+                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-600 flex items-center justify-center animate-fade-in pointer-events-none">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -244,14 +251,21 @@ export const BookingFormClient: React.FC<BookingFormClientProps> = ({ services, 
                     <Mail className="w-3.5 h-3.5 text-primary" />
                     Email Address *
                   </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="patient@example.com"
-                    className="px-4 py-3 bg-[#F0F0F0] border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-xs"
-                  />
+                  <div className="relative w-full">
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="patient@example.com"
+                      className="w-full px-4 py-3 bg-[#F0F0F0] border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 text-xs pr-10"
+                    />
+                    {email.trim().length > 0 && /\S+@\S+\.\S+/.test(email) && (
+                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-600 flex items-center justify-center animate-fade-in pointer-events-none">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -259,14 +273,21 @@ export const BookingFormClient: React.FC<BookingFormClientProps> = ({ services, 
                     <Phone className="w-3.5 h-3.5 text-primary" />
                     Phone Number *
                   </label>
-                  <input
-                    type="tel"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="(555) 000-0000"
-                    className="px-4 py-3 bg-[#F0F0F0] border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-xs"
-                  />
+                  <div className="relative w-full">
+                    <input
+                      type="tel"
+                      required
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="(555) 000-0000"
+                      className="w-full px-4 py-3 bg-[#F0F0F0] border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 text-xs pr-10"
+                    />
+                    {phone.trim().length > 0 && phone.replace(/\D/g, '').length >= 7 && (
+                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-600 flex items-center justify-center animate-fade-in pointer-events-none">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-1.5 sm:col-span-2">
@@ -275,17 +296,25 @@ export const BookingFormClient: React.FC<BookingFormClientProps> = ({ services, 
                     WhatsApp Number *
                   </label>
                   <div className="flex items-center gap-3">
-                    <input
-                      type="tel"
-                      required
-                      value={whatsappSameAsPhone ? phone : whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      disabled={whatsappSameAsPhone}
-                      placeholder="WhatsApp (with country code)"
-                      className={`flex-1 px-4 py-3 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-xs ${
-                        whatsappSameAsPhone ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-[#F0F0F0]'
-                      }`}
-                    />
+                    <div className="relative flex-1">
+                      <input
+                        type="tel"
+                        required
+                        value={whatsappSameAsPhone ? phone : whatsapp}
+                        onChange={(e) => setWhatsapp(e.target.value)}
+                        disabled={whatsappSameAsPhone}
+                        placeholder="WhatsApp (with country code)"
+                        className={`w-full px-4 py-3 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-xs transition-all duration-300 ${
+                          whatsappSameAsPhone ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-[#F0F0F0] focus:bg-white'
+                        }`}
+                      />
+                      {((whatsappSameAsPhone && phone.trim().length > 0 && phone.replace(/\D/g, '').length >= 7) ||
+                        (!whatsappSameAsPhone && whatsapp.trim().length > 0 && whatsapp.replace(/\D/g, '').length >= 7)) && (
+                        <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-600 flex items-center justify-center animate-fade-in pointer-events-none">
+                          <CheckCircle2 className="w-4 h-4" />
+                        </span>
+                      )}
+                    </div>
                     <label className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 whitespace-nowrap cursor-pointer select-none">
                       <input
                         type="checkbox"
@@ -309,10 +338,11 @@ export const BookingFormClient: React.FC<BookingFormClientProps> = ({ services, 
                     Select Service *
                   </label>
                   <select
+                    id="serviceId"
                     required
                     value={serviceId}
                     onChange={(e) => setServiceId(e.target.value)}
-                    className="px-4 py-3 bg-[#F0F0F0] border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-xs font-semibold text-slate-800 cursor-pointer"
+                    className="px-4 py-3 bg-[#F0F0F0] border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 text-xs font-semibold text-slate-800 cursor-pointer"
                   >
                     <option value="">-- Select Treatment / Service --</option>
                     {services.map((s) => (
@@ -324,15 +354,17 @@ export const BookingFormClient: React.FC<BookingFormClientProps> = ({ services, 
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#333333] uppercase tracking-wide">
+                  <label className="text-xs font-bold text-[#333333] uppercase tracking-wide flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-primary" />
                     Preferred Doctor (Optional)
                   </label>
                   <select
+                    id="doctorId"
                     value={doctorId}
                     onChange={(e) => setDoctorId(e.target.value)}
-                    className="px-4 py-3 bg-[#F0F0F0] border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-xs font-semibold text-slate-800 cursor-pointer"
+                    className="px-4 py-3 bg-[#F0F0F0] border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 text-xs font-semibold text-slate-800 cursor-pointer"
                   >
-                    <option value="">No Preference / First Available Specialist</option>
+                    <option value="">-- First Available Specialist --</option>
                     {doctors.map((d) => (
                       <option key={d.id} value={d.id}>
                         {d.name} — {d.title}
@@ -354,7 +386,7 @@ export const BookingFormClient: React.FC<BookingFormClientProps> = ({ services, 
                     min={new Date().toISOString().split('T')[0]}
                     value={preferredDate}
                     onChange={(e) => setPreferredDate(e.target.value)}
-                    className="px-4 py-3 bg-[#F0F0F0] border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-xs text-slate-800 cursor-pointer"
+                    className="px-4 py-3 bg-[#F0F0F0] border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 text-xs text-slate-800 cursor-pointer"
                   />
                 </div>
 
@@ -364,9 +396,10 @@ export const BookingFormClient: React.FC<BookingFormClientProps> = ({ services, 
                     Time Preference
                   </label>
                   <select
+                    id="preferredTime"
                     value={preferredTime}
                     onChange={(e) => setPreferredTime(e.target.value)}
-                    className="px-4 py-3 bg-[#F0F0F0] border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-xs font-semibold text-slate-800 cursor-pointer"
+                    className="px-4 py-3 bg-[#F0F0F0] border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 text-xs font-semibold text-slate-800 cursor-pointer"
                   >
                     <option value="Morning (9am - 12pm)">Morning (9:00 AM - 12:00 PM)</option>
                     <option value="Afternoon (12pm - 4pm)">Afternoon (12:00 PM - 4:00 PM)</option>
@@ -386,7 +419,7 @@ export const BookingFormClient: React.FC<BookingFormClientProps> = ({ services, 
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Mention any specific concerns, pain points, or previous treatment details..."
-                  className="px-4 py-3 bg-[#F0F0F0] border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-xs resize-none"
+                  className="px-4 py-3 bg-[#F0F0F0] border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all duration-300 text-xs resize-none animate-none"
                 />
               </div>
 

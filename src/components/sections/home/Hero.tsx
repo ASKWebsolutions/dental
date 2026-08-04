@@ -18,7 +18,7 @@ const trustIcons: Record<HeroTrustIcon, React.ElementType> = {
 
 export const Hero: React.FC = () => {
   return (
-    <section className="relative min-h-[850px] bg-[var(--color-bg)] overflow-hidden pt-12 pb-20 md:pt-16">
+    <section className="relative min-h-[850px] bg-[var(--color-bg)] overflow-hidden pt-6 sm:pt-8 lg:pt-10 pb-20">
       {/* Decorative Blur Blobs */}
       <div className="absolute top-1/4 right-10 w-72 h-72 rounded-full bg-[var(--color-accent)]/5 blur-3xl pointer-events-none -z-10" />
       <div className="absolute bottom-10 left-10 w-96 h-96 rounded-full bg-[var(--color-primary)]/5 blur-3xl pointer-events-none -z-10" />
@@ -94,7 +94,7 @@ export const Hero: React.FC = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5, ease: easing }}
-            className="flex items-center gap-5 bg-white/40 backdrop-blur-md border border-white/60 rounded-2xl p-4 w-full max-w-md shadow-sm"
+            className="flex items-center gap-5 glass-badge rounded-2xl p-4 w-full max-w-md shadow-sm"
           >
             {heroConfig.trustBar.map((item, idx) => {
               const Icon = trustIcons[item.icon];

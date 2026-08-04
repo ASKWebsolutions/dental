@@ -26,6 +26,18 @@ export const HomeServicesCarousel: React.FC<HomeServicesCarouselProps> = ({
   const isPaused = useRef(false);
   const dragState = useRef<{ startX: number; startScrollLeft: number } | null>(null);
   const shouldReduceMotion = useReducedMotion();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el || services.length === 0) return;
+    const firstHalf = el.scrollWidth / 2;
+    const normalizedScroll = el.scrollLeft % firstHalf;
+    const child = el.firstElementChild as HTMLElement;
+    const itemWidth = child ? child.offsetWidth + 24 : 374; // 24px is gap-6
+    const index = Math.round(normalizedScroll / itemWidth);
+    setActiveIndex(index % services.length);
+  };
 
   // Client-side dynamic fetch from public API, falling back to static homeServices
   useEffect(() => {
@@ -88,7 +100,7 @@ export const HomeServicesCarousel: React.FC<HomeServicesCarouselProps> = ({
   };
 
   return (
-    <section className="py-20 md:py-24 bg-[var(--color-bg)] overflow-hidden">
+    <section className="pt-20 md:pt-24 pb-6 sm:pb-8 bg-[var(--color-bg)] overflow-hidden">
       <Container>
         {/* Section Header */}
         <motion.div
@@ -130,6 +142,7 @@ export const HomeServicesCarousel: React.FC<HomeServicesCarouselProps> = ({
             onTouchEnd={() => {
               isPaused.current = false;
             }}
+            onScroll={handleScroll}
             className="no-scrollbar overflow-x-auto flex gap-6 pb-4 cursor-grab active:cursor-grabbing select-none"
           >
             {displayServices.map((service, idx) => (
@@ -162,6 +175,34 @@ export const HomeServicesCarousel: React.FC<HomeServicesCarouselProps> = ({
               </article>
             ))}
           </div>
+
+          {/* Carousel Pagination Dots */}
+          {services.length > 0 && (
+            <div className="flex justify-center gap-2 mt-8">
+              {services.map((_, idx) => {
+                const isActive = activeIndex === idx;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      const el = scrollRef.current;
+                      if (!el) return;
+                      const child = el.firstElementChild as HTMLElement;
+                      const itemWidth = child ? child.offsetWidth + 24 : 374;
+                      el.scrollTo({
+                        left: idx * itemWidth,
+                        behavior: 'smooth',
+                      });
+                    }}
+                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                      isActive ? 'w-8 bg-[#003b1b]' : 'w-2 bg-slate-300 hover:bg-slate-400'
+                    }`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                );
+              })}
+            </div>
+          )}
         </motion.div>
       </Container>
     </section>

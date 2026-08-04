@@ -3,6 +3,7 @@ import React from 'react';
 import ServicesHero from '@/components/sections/services/ServicesHero';
 import ConsultationBanner from '@/components/sections/services/ConsultationBanner';
 import VisitOurStudio from '@/components/sections/services/VisitOurStudio';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import { getServices } from '@/data/services';
 import { getClinicSettings } from '@/lib/contact';
 
@@ -19,8 +20,12 @@ export default async function ServicesPage() {
   return (
     <>
       <ServicesHero initialServices={initialServices} />
-      <ConsultationBanner />
-      <VisitOurStudio settings={settings} />
+      <ScrollReveal>
+        <ConsultationBanner />
+      </ScrollReveal>
+      <ScrollReveal>
+        <VisitOurStudio settings={settings} />
+      </ScrollReveal>
     </>
   );
 }

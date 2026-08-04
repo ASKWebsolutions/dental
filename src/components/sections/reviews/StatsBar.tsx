@@ -2,6 +2,8 @@ import React from 'react';
 import Container from '@/components/ui/Container';
 import { SiteStat } from '@/types/reviews';
 
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
+
 interface StatsBarProps {
   stats: SiteStat[];
 }
@@ -16,7 +18,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({ stats }) => {
           {stats.map((stat) => (
             <div key={stat.id} className="flex flex-col items-center justify-center">
               <span className="font-serif font-bold text-3xl text-amber-100 tracking-tight">
-                {stat.value}
+                <AnimatedCounter value={stat.value} />
               </span>
               <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-200/80 mt-1">
                 {stat.label}

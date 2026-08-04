@@ -9,6 +9,7 @@ import BottomCTA from './BottomCTA';
 import TrustLogos from './TrustLogos';
 import ReviewSubmitModal from './ReviewSubmitModal';
 import { Review, SiteStat } from '@/types/reviews';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 interface ReviewsPageContentProps {
   initialReviews: Review[];
@@ -24,11 +25,21 @@ export const ReviewsPageContent: React.FC<ReviewsPageContentProps> = ({ initialR
   return (
     <>
       <ReviewsHero />
-      <StatsBar stats={stats} />
-      <SpotlightTestimonial />
-      <StoriesGrid initialReviews={initialReviews} />
-      <BottomCTA onOpenModal={openModal} />
-      <TrustLogos />
+      <ScrollReveal>
+        <StatsBar stats={stats} />
+      </ScrollReveal>
+      <ScrollReveal>
+        <SpotlightTestimonial />
+      </ScrollReveal>
+      <ScrollReveal>
+        <StoriesGrid initialReviews={initialReviews} />
+      </ScrollReveal>
+      <ScrollReveal>
+        <BottomCTA onOpenModal={openModal} />
+      </ScrollReveal>
+      <ScrollReveal>
+        <TrustLogos />
+      </ScrollReveal>
       <ReviewSubmitModal isOpen={isModalOpen} onClose={closeModal} />
     </>
   );

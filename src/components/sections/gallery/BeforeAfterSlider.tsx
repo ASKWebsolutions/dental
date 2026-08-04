@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { MoveHorizontal } from 'lucide-react';
 import type { GalleryImage } from '@/types/gallery';
@@ -110,21 +111,26 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
         className="absolute top-0 bottom-0 w-0.5 bg-white/70 shadow-lg pointer-events-none z-20"
         style={{ left: `${position}%` }}
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white text-[#003b1b] flex items-center justify-center shadow-lg border border-slate-200">
-          <MoveHorizontal className="w-5 h-5" strokeWidth={2.5} />
-        </div>
+        <motion.div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white text-[#003b1b] flex items-center justify-center shadow-lg border border-slate-200 pointer-events-auto cursor-ew-resize"
+          whileHover={{ scale: 1.15 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        >
+          <MoveHorizontal className="w-5 h-5 text-[#003b1b]" strokeWidth={2.5} />
+        </motion.div>
       </div>
 
       {/* Floating badges */}
       <div
-        className={`absolute top-4 left-4 z-20 bg-emerald-950/80 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-sm pointer-events-none transition-opacity duration-300 ${
+        className={`absolute top-4 left-4 z-20 glass-badge text-[#003b1b] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full pointer-events-none transition-opacity duration-300 ${
           position > 15 ? 'opacity-100' : 'opacity-0'
         }`}
       >
         {displayBeforeLabel}
       </div>
       <div
-        className={`absolute top-4 right-4 z-20 bg-white/90 text-[#18181b] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-sm pointer-events-none transition-opacity duration-300 ${
+        className={`absolute top-4 right-4 z-20 glass-badge text-[#003b1b] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full pointer-events-none transition-opacity duration-300 ${
           position < 85 ? 'opacity-100' : 'opacity-0'
         }`}
       >

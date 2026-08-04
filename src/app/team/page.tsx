@@ -3,6 +3,7 @@ import React from 'react';
 import TeamPageContent from '@/components/sections/team/TeamPageContent';
 import TeamFAQ from '@/components/sections/team/TeamFAQ';
 import BeginTransformation from '@/components/sections/team/BeginTransformation';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export const metadata: Metadata = {
   title: 'Our Team',
@@ -14,8 +15,12 @@ export default function TeamPage() {
   return (
     <>
       <TeamPageContent />
-      <TeamFAQ />
-      <BeginTransformation />
+      <ScrollReveal>
+        <TeamFAQ />
+      </ScrollReveal>
+      <ScrollReveal>
+        <BeginTransformation />
+      </ScrollReveal>
     </>
   );
 }

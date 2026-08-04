@@ -53,7 +53,7 @@ export const DoctorsGrid: React.FC<DoctorsGridProps> = ({ doctors, onViewProfile
             <motion.div
               key={doc.id || idx}
               variants={cardVariants}
-              className="bg-white rounded-3xl p-6 sm:p-7 shadow-card border border-slate-100 flex flex-col justify-between h-full text-left group hover:-translate-y-1.5 hover:shadow-lg transition-all duration-300 relative overflow-hidden"
+              className="bg-white rounded-3xl p-6 sm:p-7 shadow-card border border-slate-100 flex flex-col justify-between h-full text-left group hover:-translate-y-1.5 hover:shadow-lg transition-all duration-300 relative overflow-hidden shimmer-sheen"
             >
               <div>
                 {/* Photo Frame - grayscale to color on hover */}

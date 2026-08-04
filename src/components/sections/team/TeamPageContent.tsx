@@ -6,6 +6,7 @@ import TeamHero from './TeamHero';
 import FeaturedDoctors from './FeaturedDoctors';
 import DoctorsGrid from './DoctorsGrid';
 import DoctorModal from './DoctorModal';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export const TeamPageContent: React.FC = () => {
   const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
@@ -29,12 +30,16 @@ export const TeamPageContent: React.FC = () => {
   return (
     <>
       <TeamHero />
-      <FeaturedDoctors
-        founder={founder}
-        adjacent={adjacent}
-        onViewProfile={setSelectedDoctor}
-      />
-      <DoctorsGrid doctors={gridDoctors} onViewProfile={setSelectedDoctor} />
+      <ScrollReveal>
+        <FeaturedDoctors
+          founder={founder}
+          adjacent={adjacent}
+          onViewProfile={setSelectedDoctor}
+        />
+      </ScrollReveal>
+      <ScrollReveal>
+        <DoctorsGrid doctors={gridDoctors} onViewProfile={setSelectedDoctor} />
+      </ScrollReveal>
       <DoctorModal doctor={selectedDoctor} onClose={() => setSelectedDoctor(null)} />
     </>
   );

@@ -265,7 +265,7 @@ export const ContactGrid: React.FC<ContactGridProps> = ({ settings }) => {
           {/* RIGHT: CLINIC INFORMATION & MAP (col-span-5) */}
           <div className="lg:col-span-5 flex flex-col gap-6 w-full">
             {/* A. Clinic Info Card */}
-            <div className="bg-[#0B5E2F] text-white rounded-[32px] p-8 md:p-10 text-left relative overflow-hidden shadow-card border border-[#004020]">
+            <div className="bg-[#003b1b] text-white rounded-[32px] p-8 md:p-10 text-left relative overflow-hidden shadow-card border border-[#004020]">
               {/* Decorative accent circle */}
               <div className="absolute top-[-50px] right-[-50px] w-48 h-48 rounded-full bg-white/5 blur-2xl pointer-events-none" />
 

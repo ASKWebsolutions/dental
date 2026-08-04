@@ -5,6 +5,7 @@ import HomeServicesCarousel from '@/components/sections/home/HomeServicesCarouse
 import StatsBar from '@/components/sections/home/StatsBar';
 import TestimonialCarousel from '@/components/sections/home/TestimonialCarousel';
 import FinalCTA from '@/components/sections/home/FinalCTA';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import { getApprovedReviews, getSiteStats, getApprovedReviewsCount } from '@/lib/reviews';
 import { getHomeServices } from '@/data/homeServices';
 import { Testimonial, HomeService } from '@/types';
@@ -59,11 +60,21 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <Philosophy />
-      <StatsBar stats={statsList} />
-      <HomeServicesCarousel initialServices={initialServices.length > 0 ? initialServices : undefined} />
-      <TestimonialCarousel initialTestimonials={mappedTestimonials.length > 0 ? mappedTestimonials : undefined} />
-      <FinalCTA />
+      <ScrollReveal>
+        <Philosophy />
+      </ScrollReveal>
+      <ScrollReveal>
+        <StatsBar stats={statsList} />
+      </ScrollReveal>
+      <ScrollReveal>
+        <HomeServicesCarousel initialServices={initialServices.length > 0 ? initialServices : undefined} />
+      </ScrollReveal>
+      <ScrollReveal>
+        <TestimonialCarousel initialTestimonials={mappedTestimonials.length > 0 ? mappedTestimonials : undefined} />
+      </ScrollReveal>
+      <ScrollReveal>
+        <FinalCTA />
+      </ScrollReveal>
     </>
   );
 }

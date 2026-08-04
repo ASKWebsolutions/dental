@@ -81,7 +81,7 @@ export const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
   };
 
   return (
-    <section className="py-16 md:py-24 px-6 bg-[var(--color-bg)] flex justify-center">
+    <section className="pt-4 sm:pt-6 pb-16 md:pb-24 px-6 bg-[var(--color-bg)] flex justify-center">
       {/* Spotlight Card */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}

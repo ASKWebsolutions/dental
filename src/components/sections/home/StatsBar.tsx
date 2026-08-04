@@ -5,6 +5,8 @@ import { motion, Variants } from 'framer-motion';
 import Container from '@/components/ui/Container';
 import { SiteStat } from '@/types/reviews';
 
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
+
 interface StatsBarProps {
   stats?: SiteStat[];
 }
@@ -70,7 +72,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({ stats }) => {
             >
               {/* Big mint-colored number */}
               <span className="font-serif font-bold text-4xl md:text-5xl lg:text-[56px] text-[#b1f2be] mb-3 tracking-tight">
-                {stat.value}
+                <AnimatedCounter value={stat.value} />
               </span>
               {/* Bold uppercase-tracked label in white */}
               <span className="font-sans font-bold text-[11px] md:text-xs uppercase tracking-widest text-white/90 leading-tight">
