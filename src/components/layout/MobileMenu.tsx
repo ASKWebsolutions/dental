@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { X, Phone, Mail, MapPin } from 'lucide-react';
 import { NavLink } from '@/types';
@@ -18,6 +19,7 @@ interface MobileMenuProps {
 }
 
 export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, settings }) => {
+  const pathname = usePathname();
   const overlayVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
@@ -87,18 +89,41 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, 
 
             {/* Links */}
             <div className="flex-1 overflow-y-auto py-8 px-6">
-              <motion.nav variants={containerVariants} className="flex flex-col gap-6">
-                {links.map((link) => (
-                  <motion.div key={link.href} variants={itemVariants}>
-                    <Link
-                      href={link.href}
-                      onClick={onClose}
-                      className="text-xl font-semibold text-dark hover:text-primary transition-colors block py-1"
-                    >
-                      {link.label}
-                    </Link>
-                  </motion.div>
-                ))}
+              <motion.nav variants={containerVariants} className="flex flex-col gap-4 text-center">
+                {links.map((link) => {
+                  const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+                  return (
+                    <motion.div key={link.href} variants={itemVariants}>
+                      <Link
+                        href={link.href}
+                        onClick={onClose}
+                        className={`relative flex flex-col items-center justify-center py-2.5 text-lg font-bold transition-all duration-200 ${
+                          isActive ? 'text-[#003b1b]' : 'text-slate-800 hover:text-[#003b1b]'
+                        }`}
+                      >
+                        <span className="relative z-10">{link.label}</span>
+                        {isActive && (
+                          <motion.span
+                            layoutId="activeMobileIndicator"
+                            className="mt-0.5 text-[#003b1b] flex items-center justify-center shrink-0"
+                            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                          >
+                            <svg
+                              width="18"
+                              height="8"
+                              viewBox="0 0 20 10"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="w-3.5 h-1.5 fill-current"
+                            >
+                              <path d="M2 0C2 2 1 4 0 5C3 6 4 10 10 10C16 10 17 6 20 5C19 4 18 2 18 0C14 0 13 2 10 2C7 2 6 0 2 0Z" />
+                            </svg>
+                          </motion.span>
+                        )}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
               </motion.nav>
 
               {/* Contact details */}

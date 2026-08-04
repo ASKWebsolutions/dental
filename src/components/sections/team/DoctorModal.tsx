@@ -104,7 +104,7 @@ export const DoctorModal: React.FC<DoctorModalProps> = ({ doctor, onClose }) => 
             </button>
 
             {/* Scrollable Body */}
-            <div className="overflow-y-auto">
+            <div className="flex-1 min-h-0 overflow-y-auto">
               {/* Header */}
               <div className="p-6 md:p-8 pb-0">
                 <div className="flex flex-col sm:flex-row items-start gap-5">

@@ -55,6 +55,18 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
     }
   };
 
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length > 0) {
+      updateFromClientX(e.touches[0].clientX);
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length > 0) {
+      updateFromClientX(e.touches[0].clientX);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowLeft') {
       setPosition((p) => Math.max(0, p - 5));
@@ -78,6 +90,8 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
+      onTouchMove={handleTouchMove}
+      onTouchStart={handleTouchStart}
       onKeyDown={handleKeyDown}
       className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] select-none touch-none cursor-ew-resize overflow-hidden rounded-2xl bg-slate-900 shadow-card focus:outline-none focus-visible:ring-2 focus-visible:ring-[#003b1b]"
     >
@@ -123,15 +137,15 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
 
       {/* Floating badges */}
       <div
-        className={`absolute top-4 left-4 z-20 glass-badge text-[#003b1b] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full pointer-events-none transition-opacity duration-300 ${
-          position > 15 ? 'opacity-100' : 'opacity-0'
+        className={`absolute top-3 sm:top-4 left-3 sm:left-4 z-20 glass-badge text-[#003b1b] text-[8px] xs:text-[9px] sm:text-[10px] font-bold uppercase tracking-wider sm:tracking-widest px-2 sm:px-3 py-1 sm:py-1.5 rounded-full pointer-events-none transition-opacity duration-300 ${
+          position > 25 ? 'opacity-100' : 'opacity-0'
         }`}
       >
         {displayBeforeLabel}
       </div>
       <div
-        className={`absolute top-4 right-4 z-20 glass-badge text-[#003b1b] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full pointer-events-none transition-opacity duration-300 ${
-          position < 85 ? 'opacity-100' : 'opacity-0'
+        className={`absolute top-3 sm:top-4 right-3 sm:right-4 z-20 glass-badge text-[#003b1b] text-[8px] xs:text-[9px] sm:text-[10px] font-bold uppercase tracking-wider sm:tracking-widest px-2 sm:px-3 py-1 sm:py-1.5 rounded-full pointer-events-none transition-opacity duration-300 ${
+          position < 75 ? 'opacity-100' : 'opacity-0'
         }`}
       >
         {displayAfterLabel}
