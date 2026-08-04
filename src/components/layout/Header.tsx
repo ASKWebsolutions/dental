@@ -54,7 +54,7 @@ export const Header: React.FC<{ settings?: any }> = ({ settings }) => {
           </Link>
 
           {/* Navigation Links with Half-Teeth Active Indicator */}
-          <nav className="hidden lg:flex items-stretch gap-8 relative shrink-0 h-full">
+          <nav className="hidden lg:flex items-center gap-8 relative shrink-0">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href));
               return (
@@ -62,27 +62,31 @@ export const Header: React.FC<{ settings?: any }> = ({ settings }) => {
                   key={link.label}
                   href={link.href}
                   className={cn(
-                    'relative flex items-center text-xs sm:text-sm tracking-wide transition-colors font-sans h-full',
+                    'relative flex flex-col items-center py-2 text-xs sm:text-sm tracking-wide transition-colors font-sans',
                     isActive
                       ? 'text-[#003b1b] font-bold'
                       : 'text-gray-600 hover:text-[#003b1b] font-medium'
                   )}
                 >
-                  {link.label}
+                  {/* Nav Link Text */}
+                  <span>{link.label}</span>
 
-                  {/* Half-Teeth Icon Crest beneath active page */}
+                  {/* Half-Tooth Icon - Rendered DIRECTLY beneath text label */}
                   {isActive && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-10 -mt-[1px]">
+                    <div className="absolute top-full -mt-0.5 flex items-center justify-center pointer-events-none">
                       <svg
-                        width="20"
-                        height="10"
-                        viewBox="0 0 24 12"
+                        width="16"
+                        height="8"
+                        viewBox="0 0 20 10"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-[#003b1b] fill-current"
+                        className="text-[#003b1b]"
                       >
-                        {/* Curved Top Half-Teeth Crest Shape */}
-                        <path d="M2 0C2 4.41828 5.58172 8 10 8C11.5 8 12.5 8 14 8C18.4183 8 22 4.41828 22 0H2Z" />
+                        {/* Precise Top Half Molar Crest Path */}
+                        <path
+                          d="M2 10C2 6 3.5 1 6.5 1C8.5 1 9.5 3 10 3C10.5 3 11.5 1 13.5 1C16.5 1 18 6 18 10H2Z"
+                          fill="currentColor"
+                        />
                       </svg>
                     </div>
                   )}
