@@ -1,4 +1,4 @@
-import { ClinicConfig } from '@/types';
+import { ClinicConfig, HeroConfig } from '@/types';
 
 export const siteConfig: ClinicConfig = {
   name: 'Dental Cosmetics & Implant Centre',
@@ -20,4 +20,30 @@ export const siteConfig: ClinicConfig = {
   socialLinks: {
     facebook: 'https://www.facebook.com/p/Dental-Cosmetics-and-Implant-Centre-I-8-MarkazIslamabad-100064120326094/'
   }
+};
+
+export const heroConfig: HeroConfig = {
+  eyebrow: 'BOUTIQUE DENTAL CARE',
+  headline: {
+    line1: 'Crafting Your',
+    highlight: 'Masterpiece',
+    line2: 'Smile.',
+  },
+  subtitle:
+    'Precision cosmetic dentistry and advanced implant care, crafted by specialist hands in a calm, boutique environment designed around your comfort.',
+  primaryCta: { label: 'Our Philosophy', href: '/about' },
+  secondaryCta: { label: 'View Results', href: '/gallery' },
+  trustBar: [
+    { icon: 'ShieldCheck', label: 'ISO CERTIFIED' },
+    { icon: 'Award', label: 'AWARD WINNING' },
+  ],
+  images: {
+    base: '/images/home/cosmetic-smile.png',
+    overlay: '/images/home/dental-implants.png',
+  },
+  liveBadge: {
+    label: 'LIVE UPDATES',
+    status: 'Accepting New Patients',
+    nextAvailable: 'Next available: Dec 14',
+  },
 };

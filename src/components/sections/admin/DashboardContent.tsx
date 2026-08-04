@@ -98,7 +98,7 @@ export default function DashboardContent({ username: _username, initialServices 
     if (activeTab === 'services') {
       setFormFields({ title: '', shortDescription: '', description: '', slug: '', iconName: 'Sparkles', imagePath: '', bullets: [''], featured: false });
     } else if (activeTab === 'doctors') {
-      setFormFields({ name: 'Dr. ', role: 'core-team', title: '', bio: '', imagePath: '/images/home/doctor-elena.png', specialties: [''], education: [''], featured: false });
+      setFormFields({ name: 'Dr. ', role: 'core-team', title: '', bio: '', quote: '', experience: '', imagePath: '/images/home/doctor-elena.png', specialties: [''], education: [''], featured: false, isFounder: false, isAvailable: true });
     }
     setIsFormOpen(true);
   };
@@ -495,6 +495,52 @@ export default function DashboardContent({ username: _username, initialServices 
                       onChange={(e) => setFormFields({ ...formFields, education: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
                       className="px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-primary text-xs"
                     />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-[#333333] uppercase tracking-wide">Personal Philosophy Quote (Optional)</label>
+                    <textarea
+                      rows={2}
+                      value={formFields.quote || ''}
+                      onChange={(e) => setFormFields({ ...formFields, quote: e.target.value })}
+                      className="px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-primary text-xs resize-none"
+                      placeholder="True dental art is invisible..."
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-[#333333] uppercase tracking-wide">Experience Highlight (Optional)</label>
+                    <input
+                      type="text"
+                      value={formFields.experience || ''}
+                      onChange={(e) => setFormFields({ ...formFields, experience: e.target.value })}
+                      className="px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-primary text-xs"
+                      placeholder="25+ Years Clinical Excellence"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="checkbox"
+                        id="doctor-founder"
+                        checked={formFields.isFounder || false}
+                        onChange={(e) => setFormFields({ ...formFields, isFounder: e.target.checked })}
+                        className="w-4 h-4 text-primary bg-slate-50 border-slate-300 rounded focus:ring-primary"
+                      />
+                      <label htmlFor="doctor-founder" className="text-sm font-bold text-[#333333]">
+                        Founder / Medical Director
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="checkbox"
+                        id="doctor-available"
+                        checked={formFields.isAvailable !== false}
+                        onChange={(e) => setFormFields({ ...formFields, isAvailable: e.target.checked })}
+                        className="w-4 h-4 text-primary bg-slate-50 border-slate-300 rounded focus:ring-primary"
+                      />
+                      <label htmlFor="doctor-available" className="text-sm font-bold text-[#333333]">
+                        Accepting Patients
+                      </label>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2 mt-2">
                     <input

@@ -61,9 +61,13 @@ model Doctor {
   title        String
   specialties  String[]      // Native Mongo String array
   bio          String
+  quote        String?       // Personal philosophy quote (used in hero card + modal)
+  experience   String?       // Experience descriptor, e.g. "25+ Years Clinical Excellence"
   imagePath    String
   education    String[]      // Native Mongo String array
   featured     Boolean       @default(false)
+  isFounder    Boolean       @default(false)
+  isAvailable  Boolean       @default(true)
   displayOrder Int           @default(0)
   appointments Appointment[]
   createdAt    DateTime      @default(now())

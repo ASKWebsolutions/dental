@@ -1,77 +1,123 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import React, { useMemo, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Search, X } from 'lucide-react';
 import Container from '@/components/ui/Container';
-import Button from '@/components/ui/Button';
+import { ServicesGrid } from './ServicesGrid';
+import { services as staticServices } from '@/data/services';
+import { Service } from '@/types';
 
-export const ServicesHero: React.FC = () => {
+interface ServicesHeroProps {
+  initialServices?: Service[];
+}
+
+export const ServicesHero: React.FC<ServicesHeroProps> = ({ initialServices }) => {
+  const prefersReducedMotion = useReducedMotion();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const allServices =
+    initialServices && initialServices.length > 0 ? initialServices : staticServices;
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+  };
+
+  const filteredServices = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    // If query is empty, return ALL services
+    if (!query) {
+      return allServices;
+    }
+
+    return allServices.filter((service) => {
+      const titleMatch = service.title?.toLowerCase().includes(query);
+      const shortDescMatch = service.shortDescription?.toLowerCase().includes(query);
+      const descMatch = service.description?.toLowerCase().includes(query);
+      const featureMatch = service.bullets?.some((f) => f.toLowerCase().includes(query));
+
+      return titleMatch || shortDescMatch || descMatch || featureMatch;
+    });
+  }, [searchQuery, allServices]);
+
   return (
-    <section className="relative pt-12 pb-20 md:pt-16 md:pb-28 overflow-hidden bg-bg flex flex-col justify-center items-center text-center">
-      {/* Faint Overlapping Decorative Outline Squares (Teal & Crimson, 10% Opacity) */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] pointer-events-none -z-10 translate-x-12 -translate-y-12 select-none opacity-10">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-          {/* Teal Square */}
-          <rect x="10" y="10" width="70" height="70" rx="4" stroke="var(--color-primary)" strokeWidth="1.5" />
-          {/* Crimson Square */}
-          <rect x="25" y="25" width="70" height="70" rx="4" stroke="var(--color-accent)" strokeWidth="1.5" />
-        </svg>
-      </div>
+    <>
+      <section className="relative pt-12 pb-16 md:pt-16 md:pb-20 overflow-hidden bg-bg flex flex-col justify-center items-center text-center">
+        <Container className="max-w-[768px] flex flex-col items-center">
+          {/* Top Subtle Vertical Divider Line */}
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="w-px h-8 bg-[#003b1b] mx-auto mb-4"
+          />
 
-      <Container className="max-w-[768px] flex flex-col items-center">
-        {/* Eyebrow Label: crimson, uppercase, bold, letter-spacing 1.4px */}
-        <motion.span
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="font-sans font-bold text-xs uppercase tracking-[1.4px] text-accent mb-4 block"
-        >
-          Our Services
-        </motion.span>
-
-        {/* H1 Title: serif, 48px, centered, teal */}
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-          className="font-serif font-bold text-4xl sm:text-5xl lg:text-[48px] lg:leading-[58px] text-primary tracking-[-0.96px] mb-6"
-        >
-          Transforming Smiles with Bespoke Advanced Dentistry
-        </motion.h1>
-
-        {/* Subtext: centered paragraph, gray, 18px */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
-          className="text-base sm:text-lg text-body-text leading-[29px] font-sans font-normal mb-10 max-w-2xl"
-        >
-          We offer a comprehensive suite of dental solutions combining bio-compatible precision, cosmetic artistry, and anxiety-free patient care.
-        </motion.p>
-
-        {/* Two CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
-          className="flex flex-wrap items-center justify-center gap-4 w-full sm:w-auto font-sans"
-        >
-          <Link
-            href="/book-appointment"
-            className="inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-sm px-8 py-3.5 bg-primary text-white hover:bg-primary-hover btn-diagonal-stripe shadow-lg cursor-pointer"
+          {/* Eyebrow */}
+          <motion.span
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="text-xs font-bold tracking-[0.3em] text-[#003b1b] uppercase block mb-3"
           >
-            Book Appointment
-          </Link>
-          <a
-            href="#services-list"
-            className="inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-sm px-8 py-3.5 border-2 border-primary text-primary hover:bg-primary hover:text-white bg-transparent cursor-pointer"
+            Precision &amp; Artistry
+          </motion.span>
+
+          {/* H1 Title */}
+          <motion.h1
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
+            className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
           >
-            Explore Services
-          </a>
-        </motion.div>
-      </Container>
-    </section>
+            Comprehensive Dental <span className="italic font-normal text-[#003b1b]">Solutions</span>
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+            className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto mb-8 font-sans leading-relaxed"
+          >
+            From routine maintenance to complex reconstructive surgery, our boutique clinic offers
+            a full spectrum of restorative and cosmetic services tailored to your unique anatomy.
+          </motion.p>
+
+          {/* Rounded Search Bar */}
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
+            className="max-w-md mx-auto relative w-full"
+          >
+            <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 text-emerald-600" />
+            <input
+              type="text"
+              placeholder="Search for a procedure..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="w-full pl-13 pr-10 py-3.5 rounded-full bg-white border border-gray-200/80 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#003b1b]/20 text-sm text-gray-800 placeholder-gray-400"
+            />
+            {searchQuery && (
+              <button
+                onClick={clearSearch}
+                aria-label="Clear search"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </motion.div>
+        </Container>
+      </section>
+
+      <ServicesGrid services={filteredServices} onReset={clearSearch} searchQuery={searchQuery} />
+    </>
   );
 };
 

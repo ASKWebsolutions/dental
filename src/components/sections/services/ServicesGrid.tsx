@@ -4,15 +4,15 @@ import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import Container from '@/components/ui/Container';
 import { ServiceCard } from './ServiceCard';
-import { services as staticServices } from '@/data/services';
 import { Service } from '@/types';
 
 interface ServicesGridProps {
-  initialServices?: Service[];
+  services: Service[];
+  onReset?: () => void;
+  searchQuery?: string;
 }
 
-export const ServicesGrid: React.FC<ServicesGridProps> = ({ initialServices }) => {
-  const displayServices = initialServices && initialServices.length > 0 ? initialServices : staticServices;
+export const ServicesGrid: React.FC<ServicesGridProps> = ({ services, onReset, searchQuery }) => {
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -48,17 +48,32 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ initialServices }) =
         </div>
 
         {/* Uniform Responsive Grid Layout (3 cols desktop, 2 cols tablet, 1 col mobile) */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full items-stretch"
-        >
-          {displayServices.map((service) => (
-            <ServiceCard key={service.id} service={service} variants={cardVariants} />
-          ))}
-        </motion.div>
+        {services.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-gray-500 text-sm mb-4">No matching procedures found.</p>
+            {onReset && (
+              <button
+                onClick={onReset}
+                className="px-6 py-2 bg-[#003b1b] text-white rounded-full text-xs font-semibold"
+              >
+                Show All Services
+              </button>
+            )}
+          </div>
+        ) : (
+          <motion.div
+            key={searchQuery || 'all'}
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full"
+          >
+            {services.map((service) => (
+              <ServiceCard key={service.id || service.title} service={service} variants={cardVariants} />
+            ))}
+          </motion.div>
+        )}
       </Container>
     </section>
   );

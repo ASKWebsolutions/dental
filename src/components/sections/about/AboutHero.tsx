@@ -2,86 +2,79 @@
 
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import Container from '@/components/ui/Container';
 
 export const AboutHero: React.FC = () => {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <section className="relative pt-12 pb-20 md:pt-16 md:pb-28 overflow-hidden bg-bg">
+    <section className="bg-bg py-16 md:py-24">
       <Container className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
         {/* Left Column - Text Block */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="lg:col-span-6 flex flex-col items-start text-left"
         >
-          {/* Badge */}
-          <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-hero-badge-bg text-hero-badge-text font-sans font-bold text-xs uppercase tracking-wider mb-6 shadow-sm">
-            Our Mission
-          </span>
+          {/* Eyebrow */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-px bg-primary" />
+            <span className="text-xs font-bold tracking-widest text-primary uppercase">
+              Our Legacy of Care
+            </span>
+          </div>
 
           {/* H1 Title */}
-          <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-[48px] lg:leading-[58px] text-primary tracking-[-0.96px] mb-6">
-            Excellence in <br />
-            <span className="text-primary italic font-normal">Every Smile.</span>
+          <h1 className="font-serif text-2xl sm:text-3xl font-semibold text-dark-text mb-6 leading-snug">
+            Crafting <span className="italic font-normal text-primary">Brilliant Smiles</span>{' '}
+            through Precision and Artistry.
           </h1>
 
-          {/* Subtext */}
-          <p className="text-base sm:text-lg text-body-text mb-8 max-w-[576px] leading-[29px] font-sans font-normal">
-            We are dedicated to providing world-class cosmetic dentistry and advanced implant care
-            in a boutique, patient-focused environment. We believe that clinical precision and
-            aesthetic artistry must go hand-in-hand to achieve durable, beautiful smiles.
+          {/* Paragraphs */}
+          <p className="font-sans text-sm sm:text-base text-body-text mb-4 leading-relaxed">
+            Since our inception, Dental Cosmetics &amp; Implant Centre has been at the forefront of
+            restorative excellence. We believe every patient deserves a smile that reflects their
+            inner confidence.
           </p>
-
-          {/* CTAs */}
-          <div className="flex flex-wrap gap-4 w-full sm:w-auto mb-6 font-sans">
-            <a
-              href="#legacy-story"
-              className="inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-sm px-8 py-3.5 bg-primary text-white hover:bg-primary-hover btn-diagonal-stripe shadow-lg cursor-pointer"
-            >
-              Discover Our Story
-            </a>
-            <Link
-              href="/gallery"
-              className="inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-sm px-8 py-3.5 border-2 border-primary text-primary hover:bg-primary hover:text-white bg-transparent cursor-pointer"
-            >
-              View Success Gallery
-            </Link>
-          </div>
+          <p className="font-sans text-sm sm:text-base text-body-text leading-relaxed">
+            Our mission is to merge advanced clinical technology with a boutique, patient-first
+            experience, ensuring that every procedure—from routine whitening to complex full-mouth
+            reconstructions—is performed with unparalleled meticulousness.
+          </p>
         </motion.div>
 
-        {/* Right Column - Hero Image & Floating Badge */}
+        {/* Right Column - Image & Dark Green Quote Card */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
-          className="lg:col-span-6 relative flex justify-center lg:justify-end py-10"
+          className="lg:col-span-6 relative"
         >
-          {/* Hero Image Container Wrapper - border E7EEFF */}
-          <div className="relative w-full max-w-[480px] aspect-square rounded-[24px] border-[12px] border-[#E0E0E0] shadow-card bg-slate-100 shrink-0">
-            <Image
-              src="/images/home/about-hero.png"
-              alt="Dental Cosmetics Team"
-              fill
-              sizes="(max-width: 768px) 100vw, 480px"
-              priority
-              className="object-cover rounded-[10px]"
-            />
+          {/* Sized + Tilted Wrapper */}
+          <div className="relative w-full max-w-[460px] h-[580px] lg:h-[620px] mx-auto lg:ml-auto rotate-2 hover:rotate-0 transition-transform duration-500 ease-out">
+            {/* Asymmetric Peel Image Container */}
+            <div className="relative w-full h-full rounded-tl-[3.5rem] rounded-tr-[1.5rem] rounded-br-[3.5rem] rounded-bl-[2rem] overflow-hidden shadow-2xl bg-white">
+              <Image
+                src="/images/home/about-hero.png"
+                alt="Dental Cosmetics & Implant Centre team"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+                className="object-cover"
+              />
+            </div>
 
-            {/* Floating Stat Card overlapping bottom-left -24px offset */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.5, ease: 'easeOut' }}
-              className="absolute -bottom-6 -left-6 bg-stat-card-bg text-white px-6 py-5 rounded-[16px] shadow-lg flex flex-col items-start min-w-[210px] z-20 text-left"
-            >
-              <span className="font-serif font-bold text-4xl leading-none mb-1">25+</span>
-              <span className="font-sans font-bold text-[11px] uppercase tracking-[1.4px] text-white/95 leading-tight">
-                Years of Artistry
-              </span>
-            </motion.div>
+            {/* Floating Quote Card (Bottom-Left) - counter-rotated upright */}
+            <div className="absolute -bottom-4 -left-6 sm:-bottom-6 sm:-left-10 bg-[#003b1b] text-white p-6 sm:p-7 rounded-2xl shadow-2xl max-w-[260px] sm:max-w-[290px] z-20 border border-white/10 -rotate-2">
+              <p className="font-serif italic text-sm sm:text-base mb-3 leading-relaxed text-emerald-100">
+                &ldquo;Precision is the foundation of beauty.&rdquo;
+              </p>
+              <p className="font-sans text-xs tracking-wider uppercase text-emerald-300 font-semibold">
+                &mdash; Dr. Julian Vance
+              </p>
+            </div>
           </div>
         </motion.div>
       </Container>

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
-import TeamHero from '@/components/sections/team/TeamHero';
-import DoctorsGrid from '@/components/sections/team/DoctorsGrid';
+import TeamPageContent from '@/components/sections/team/TeamPageContent';
 import Workflow from '@/components/sections/team/Workflow';
 import TeamFAQ from '@/components/sections/team/TeamFAQ';
 import ConsultationCTA from '@/components/sections/team/ConsultationCTA';
@@ -15,8 +14,7 @@ export const metadata: Metadata = {
 export default function TeamPage() {
   return (
     <>
-      <TeamHero />
-      <DoctorsGrid />
+      <TeamPageContent />
       <Workflow />
       <TeamFAQ />
       <ConsultationCTA />

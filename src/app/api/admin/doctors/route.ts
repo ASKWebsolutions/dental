@@ -8,9 +8,14 @@ const doctorSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   bio: z.string().min(1, 'Bio is required'),
   imagePath: z.string().min(1, 'Image path is required'),
+  quote: z.string().optional(),
+  experience: z.string().optional(),
   specialties: z.array(z.string()).optional(),
   education: z.array(z.string()).optional(),
   displayOrder: z.number().optional(),
+  featured: z.boolean().optional(),
+  isFounder: z.boolean().optional(),
+  isAvailable: z.boolean().optional(),
 });
 
 export async function GET() {
@@ -53,10 +58,15 @@ export async function POST(request: Request) {
         name: data.name,
         title: data.title,
         bio: data.bio,
+        quote: data.quote || null,
+        experience: data.experience || null,
         imagePath: data.imagePath,
         specialties,
         education,
         displayOrder: data.displayOrder ?? 0,
+        featured: data.featured ?? false,
+        isFounder: data.isFounder ?? false,
+        isAvailable: data.isAvailable ?? true,
       },
     });
 

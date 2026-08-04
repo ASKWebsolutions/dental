@@ -1,8 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import { createElement, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, Variants } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { motion, Variants, useReducedMotion } from 'framer-motion';
+import {
+  ArrowRight,
+  Sparkles,
+  Droplets,
+  Smile,
+  ShieldCheck,
+  Activity,
+  Scissors,
+  Anchor,
+  Layers,
+  Grid,
+  Crown,
+  Flame,
+  Scan,
+  Stethoscope,
+  type LucideIcon,
+} from 'lucide-react';
 import { Service } from '@/types';
 import { resolveImageUrl } from '@/lib/media';
 
@@ -11,94 +27,101 @@ interface ServiceCardProps {
   variants?: Variants;
 }
 
+const iconRules: { keywords: string[]; icon: LucideIcon }[] = [
+  { keywords: ['whitening'], icon: Sparkles },
+  { keywords: ['scaling', 'cleaning'], icon: Droplets },
+  { keywords: ['polish'], icon: Smile },
+  { keywords: ['fill'], icon: ShieldCheck },
+  { keywords: ['root canal', 'endodontic'], icon: Activity },
+  { keywords: ['extract'], icon: Scissors },
+  { keywords: ['implant'], icon: Anchor },
+  { keywords: ['denture'], icon: Layers },
+  { keywords: ['aligner', 'brace'], icon: Grid },
+  { keywords: ['crown', 'bridge', 'veneer'], icon: Crown },
+  { keywords: ['gum', 'periodont'], icon: Flame },
+  { keywords: ['x-ray', 'scan', 'digital'], icon: Scan },
+  { keywords: ['emergency'], icon: Stethoscope },
+];
+
+function getServiceIcon(title: string): LucideIcon {
+  const lower = title.toLowerCase();
+  const match = iconRules.find(({ keywords }) =>
+    keywords.some((keyword) => lower.includes(keyword))
+  );
+  return match?.icon ?? Smile;
+}
+
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service, variants }) => {
+  const prefersReducedMotion = useReducedMotion();
   const defaultFallback = '/images/home/dental-tech.png';
   const title = service?.title || 'Dental Service';
   const shortDescription = service?.shortDescription || service?.description || '';
-  const slug = service?.slug || service?.id || 'service';
-  
-  const [imgSrc, setImgSrc] = useState(resolveImageUrl(service?.imagePath, defaultFallback));
 
-  useEffect(() => {
-    setImgSrc(resolveImageUrl(service?.imagePath, defaultFallback));
-  }, [service?.imagePath]);
-
-  // Safely parse and filter bullets array
-  const rawBullets = Array.isArray(service?.bullets) ? service.bullets : [];
-  const bullets = rawBullets.filter(
-    (b): b is string => typeof b === 'string' && b.trim().length > 0
+  const [imgSrc, setImgSrc] = useState(() =>
+    resolveImageUrl(service?.imagePath, defaultFallback)
   );
+
+  const features = (service?.bullets ?? []).filter((b) => typeof b === 'string' && b.trim());
 
   return (
     <motion.div
       variants={variants}
-      className="rounded-3xl bg-white shadow-card border border-slate-100 flex flex-col justify-between h-full text-left group hover:-translate-y-1.5 hover:shadow-lg transition-all duration-300 relative overflow-hidden"
+      initial={prefersReducedMotion ? false : undefined}
+      className="relative group rounded-3xl overflow-hidden aspect-[4/5] shadow-lg group-hover:shadow-2xl transition-all duration-300"
     >
-      {/* 1. TOP: Full-Width Prominent Photo Header */}
-      <div className="relative w-full h-[210px] sm:h-[230px] overflow-hidden bg-slate-100 shrink-0">
-        <Image
-          src={imgSrc}
-          alt={title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-          onError={() => setImgSrc(defaultFallback)}
-          unoptimized={typeof imgSrc === 'string' && imgSrc.startsWith('data:')}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
+      {/* Prominent Service Image */}
+      <Image
+        src={imgSrc}
+        alt=""
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+        className="object-cover group-hover:scale-105 transition-transform duration-500"
+        onError={() => setImgSrc(defaultFallback)}
+        unoptimized={typeof imgSrc === 'string' && imgSrc.startsWith('data:')}
+      />
+
+      {/* Dark Gradient Overlay for text contrast */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
+
+      {/* Top Category Icon Badge */}
+      <div className="absolute top-5 left-6 z-20">
+        <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-emerald-400">
+          {createElement(getServiceIcon(title), { className: 'w-5 h-5' })}
+        </div>
       </div>
 
-      {/* CARD BODY: Content Order (Title -> Description -> Bullets -> Link) */}
-      <div className="p-7 sm:p-8 flex flex-col flex-grow">
-        <div className="flex flex-col flex-grow">
-          {/* 2. Title */}
-          <h3 className="font-serif font-bold text-2xl text-primary mb-3 tracking-tight">
-            {title}
-          </h3>
+      {/* Content Overlay - bottom-aligned */}
+      <div className="absolute inset-0 z-20 p-6 flex flex-col justify-end">
+        {/* Title & Description */}
+        <h3 className="font-serif text-xl font-bold text-white mb-2">{title}</h3>
+        <p className="font-sans text-xs text-gray-200 leading-relaxed line-clamp-2 mb-4">
+          {shortDescription}
+        </p>
 
-          {/* 3. Short Description */}
-          {shortDescription && (
-            <p className="text-sm text-body-text leading-relaxed font-sans font-normal mb-5">
-              {shortDescription}
-            </p>
-          )}
+        {/* Key Features */}
+        {features.length > 0 && (
+          <div className="space-y-1.5 mb-6">
+            {features.slice(0, 2).map((feature, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <span className="text-xs text-gray-300">{feature}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
-          {/* 4. Bullets (rendered ONLY if non-empty string bullets exist) */}
-          {bullets.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
-              {bullets.map((bullet, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex items-center gap-1.5 bg-slate-50 text-slate-700 text-xs font-sans font-medium px-3 py-1.5 rounded-full border border-slate-100"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-                  {bullet}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* 5. BOTTOM: Actions (Learn More + Book Consultation) */}
-        <div className="pt-4 border-t border-slate-100 mt-auto flex items-center justify-between gap-3">
-          <Link
-            href={`/services/${slug}`}
-            className="text-primary hover:text-accent font-sans font-bold text-xs inline-flex items-center gap-1 transition-colors group/link"
-          >
-            <span>Learn More</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform duration-300" />
-          </Link>
-
-          <Link
-            href={`/book-appointment?service=${encodeURIComponent(slug)}`}
-            className="inline-flex items-center justify-center font-bold text-[11px] px-3.5 py-2 rounded-full bg-accent text-white hover:bg-accent-hover transition-colors shadow-sm cursor-pointer shrink-0"
-          >
-            Book Appointment
-          </Link>
-        </div>
+        {/* Bottom "Book Now" Button Bar */}
+        <Link
+          href={`/book-appointment?service=${encodeURIComponent(title)}`}
+          className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-semibold text-xs flex items-center justify-between transition-colors"
+        >
+          <span>Book Now</span>
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </Link>
       </div>
     </motion.div>
   );
 };
 
 export default ServiceCard;
+

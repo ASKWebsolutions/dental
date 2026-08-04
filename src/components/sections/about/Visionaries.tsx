@@ -70,10 +70,10 @@ export const Visionaries: React.FC = () => {
             <motion.div
               key={doc.id || idx}
               variants={cardVariants}
-              className="flex flex-col items-start text-left group"
+              className="group"
             >
-              {/* Doctor Photo Container */}
-              <div className="relative w-full h-[400px] sm:h-[420px] rounded-[24px] overflow-hidden shadow-card border border-slate-100 bg-slate-100 flex-shrink-0">
+              {/* Doctor Photo Card with In-Card Text Overlay */}
+              <div className="relative rounded-3xl overflow-hidden aspect-[3/4] shadow-md group cursor-pointer">
                 <Image
                   src={resolveImageUrl(doc.imagePath, '/images/home/doctor-elena.png')}
                   alt={doc.name}
@@ -81,18 +81,20 @@ export const Visionaries: React.FC = () => {
                   sizes="(max-width: 768px) 100vw, 400px"
                   className="object-cover group-hover:scale-102 transition-transform duration-500"
                 />
-              </div>
 
-              {/* Below Photo Contents */}
-              <h3 className="font-serif font-bold text-2xl text-primary mt-6 mb-1 leading-tight">
-                {doc.name}
-              </h3>
-              <span className="font-sans font-bold text-xs uppercase tracking-[0.7px] text-accent mb-3 block">
-                {doc.title}
-              </span>
-              <p className="text-sm sm:text-base text-body-text leading-relaxed font-sans font-normal">
-                {doc.bio}
-              </p>
+                {/* Bottom Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+
+                {/* Inner Text at Bottom-Left */}
+                <div className="absolute bottom-5 left-5 right-5 text-white z-10">
+                  <h3 className="font-serif text-lg sm:text-xl font-bold leading-tight text-white">
+                    {doc.name}
+                  </h3>
+                  <p className="text-xs text-gray-200 mt-1 font-sans opacity-90">
+                    {doc.title}
+                  </p>
+                </div>
+              </div>
             </motion.div>
           ))}
         </motion.div>

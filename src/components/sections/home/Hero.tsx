@@ -4,145 +4,180 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Calendar } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import { ShieldCheck, Award, Sparkles, CircleDot } from 'lucide-react';
 import Container from '@/components/ui/Container';
-import { ClinicSettings } from '@/types/settings';
-import { SiteStat } from '@/types/reviews';
+import { heroConfig } from '@/data/siteConfig';
+import { HeroTrustIcon } from '@/types';
 
-interface HeroProps {
-  settings?: ClinicSettings | null;
-  patientStat?: SiteStat | null;
-  liveReviewsCount?: number;
-}
+const easing = [0.22, 1, 0.36, 1] as const;
 
-export const Hero: React.FC<HeroProps> = ({ settings, patientStat, liveReviewsCount }) => {
+const trustIcons: Record<HeroTrustIcon, React.ElementType> = {
+  ShieldCheck,
+  Award,
+};
+
+export const Hero: React.FC = () => {
   return (
-    <section className="relative pt-12 pb-20 md:pt-16 md:pb-28 overflow-hidden bg-bg">
+    <section className="relative min-h-[850px] bg-[var(--color-bg)] overflow-hidden pt-12 pb-20 md:pt-16">
       {/* Decorative Blur Blobs */}
-      <div className="absolute top-1/4 right-10 w-72 h-72 rounded-full bg-accent/5 blur-3xl pointer-events-none -z-10 animate-pulse" />
-      <div className="absolute bottom-10 left-10 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none -z-10" />
+      <div className="absolute top-1/4 right-10 w-72 h-72 rounded-full bg-[var(--color-accent)]/5 blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-10 left-10 w-96 h-96 rounded-full bg-[var(--color-primary)]/5 blur-3xl pointer-events-none -z-10" />
 
-      <Container className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-        {/* Left Column - Text Block */}
+      {/* 12-Column Grid */}
+      <Container className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        {/* Left Column */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="lg:col-span-6 flex flex-col items-start"
+          transition={{ duration: 0.6, ease: easing }}
+          className="lg:col-span-5 flex flex-col items-start z-10"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-light text-primary font-sans font-bold text-xs uppercase tracking-wider mb-6 shadow-sm">
-            <span className="w-4 h-4 rounded-full bg-primary text-white flex items-center justify-center text-[9px] font-extrabold">
-              ✓
+          {/* Eyebrow */}
+          <motion.span
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: easing }}
+            className="text-[11px] tracking-[0.3em] text-[var(--color-primary)] font-bold uppercase mb-6"
+          >
+            {heroConfig.eyebrow}
+          </motion.span>
+
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: easing }}
+            className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-[var(--color-dark-text)] tracking-[-0.96px] mb-6 leading-tight"
+          >
+            {heroConfig.headline.line1}
+            <br />
+            <span className="italic smile-underline text-[var(--color-primary)]">
+              {heroConfig.headline.highlight}
             </span>
-            <span>Trusted by {patientStat?.value || '5,000+'} {patientStat?.label || 'Patients'}</span>
-          </div>
+            <br />
+            {heroConfig.headline.line2}
+          </motion.h1>
 
-          {/* H1 Headline */}
-          <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-[48px] lg:leading-[58px] text-primary tracking-[-0.96px] mb-6 text-left">
-            Transforming <span className="text-primary italic font-normal">Smiles</span> with Clinical Precision
-          </h1>
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3, ease: easing }}
+            className="text-sm sm:text-base text-[var(--color-body-text)] mb-8 max-w-md leading-relaxed font-sans font-normal"
+          >
+            {heroConfig.subtitle}
+          </motion.p>
 
-          {/* Subtext */}
-          <p className="text-base sm:text-lg text-body-text mb-8 max-w-xl leading-[29px] font-sans font-normal text-left">
-            Setting the gold standard in cosmetic dentistry and implants. Our expert team combines
-            clinical mastery with artistic vision to reveal your most radiant smile.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-wrap gap-4 w-full sm:w-auto mb-10">
-            <Link
-              href="/book-appointment"
-              className="inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-sm px-8 py-3.5 bg-primary text-white hover:bg-primary-hover btn-diagonal-stripe shadow-lg cursor-pointer"
-            >
-              Book Appointment
-            </Link>
-            <Link
-              href="/services"
-              className="inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-sm px-8 py-3.5 border-2 border-primary text-primary hover:bg-primary hover:text-white bg-transparent cursor-pointer"
-            >
-              Our Services
-            </Link>
-          </div>
-
-          {/* Divider */}
-          <div className="w-full border-t border-border/60 mb-6" />
-
-          {/* Social Proof Row */}
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex -space-x-3">
-              {[
-                '/images/home/doctor-sarah.png',
-                '/images/home/doctor-elena.png',
-                '/images/home/doctor-marcus.png',
-                '/images/home/patient-avatar.png',
-              ].map((img, i) => (
-                <div
-                  key={i}
-                  className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-slate-100 shadow-sm"
-                >
-                  <Image
-                    src={img}
-                    alt="Happy Patient"
-                    fill
-                    sizes="40px"
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="flex items-center gap-2 text-sm text-body-text">
-              <span className="font-bold text-dark-text">Trusted by {patientStat?.value || '5,000+'} Patients</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-              <div className="flex items-center gap-1 bg-accent-soft px-2.5 py-0.5 rounded-full text-accent font-bold text-xs border border-accent/15">
-                ★ {liveReviewsCount || 50}+ Verified Reviews
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Right Column - Large image with blobs and glass card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
-          className="lg:col-span-6 relative flex justify-center lg:justify-end"
-        >
-          {/* Layered Decorative Blobs */}
-          <div className="absolute -top-6 -right-6 w-48 h-48 rounded-full bg-accent/5 blur-xl pointer-events-none -z-10" />
-          <div className="absolute -bottom-6 -left-6 w-48 h-48 rounded-full bg-primary/5 blur-xl pointer-events-none -z-10" />
-
-          {/* Hero Image Container - 40px radius */}
-          <div className="relative w-full max-w-[480px] aspect-[4/5] rounded-[40px] overflow-hidden shadow-card border border-white/50 bg-slate-100">
-            <Image
-              src="/images/home/hero-dentist.png"
-              alt="Implant Specialist & Cosmetic Surgeon"
-              fill
-              sizes="(max-width: 768px) 100vw, 480px"
-              priority
-              className="object-cover"
-            />
-          </div>
-
-          {/* Floating Glass Notification Card */}
+          {/* Button Group */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.5, ease: 'easeOut' }}
-            className="absolute bottom-6 left-6 md:-left-6 bg-white/80 backdrop-blur-md border border-white/60 p-4 rounded-[16px] shadow-lg flex items-center gap-3.5 max-w-[260px]"
+            transition={{ duration: 0.5, delay: 0.4, ease: easing }}
+            className="flex flex-wrap gap-4 w-full sm:w-auto mb-10"
           >
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">
-              <Calendar className="w-5 h-5" />
+            <Link
+              href={heroConfig.primaryCta.href}
+              className="inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-xs px-6 py-3 bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] btn-diagonal-stripe shadow-lg cursor-pointer"
+            >
+              {heroConfig.primaryCta.label}
+            </Link>
+            <Link
+              href={heroConfig.secondaryCta.href}
+              className="inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-xs px-6 py-3 border-2 border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white bg-transparent cursor-pointer"
+            >
+              {heroConfig.secondaryCta.label}
+            </Link>
+          </motion.div>
+
+          {/* Trust Bar - Glassmorphism Panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5, ease: easing }}
+            className="flex items-center gap-5 bg-white/40 backdrop-blur-md border border-white/60 rounded-2xl p-4 w-full max-w-md shadow-sm"
+          >
+            {heroConfig.trustBar.map((item, idx) => {
+              const Icon = trustIcons[item.icon];
+              return (
+                <React.Fragment key={item.label}>
+                  {idx > 0 && <div className="w-px h-8 bg-white/70" aria-hidden="true" />}
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-9 h-9 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center text-[var(--color-primary)] shrink-0">
+                      <Icon className="w-4 h-4" />
+                    </span>
+                    <span className="text-[11px] sm:text-xs font-bold text-[var(--color-dark-text)] tracking-wider whitespace-nowrap">
+                      {item.label}
+                    </span>
+                  </div>
+                </React.Fragment>
+              );
+            })}
+          </motion.div>
+        </motion.div>
+
+        {/* Right Column - Wipe Slider */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.15, ease: easing }}
+            className="lg:col-span-7 relative h-[600px] lg:h-[750px] lg:-mr-[calc((100vw-100%)/2)] lg:w-[calc(100%+((100vw-100%)/2))]"
+        >
+          {/* Floating Decorative Icons */}
+          <div className="absolute top-8 right-8 w-12 h-12 rounded-full bg-white/80 backdrop-blur-md border border-white/60 shadow-lg flex items-center justify-center text-[var(--color-primary)] z-20 animate-pulse">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div className="absolute bottom-12 right-10 w-12 h-12 rounded-full bg-white/80 backdrop-blur-md border border-white/60 shadow-lg flex items-center justify-center text-[var(--color-primary)] z-20">
+            <CircleDot className="w-5 h-5" />
+          </div>
+
+          {/* Peel Shape Wipe Slider */}
+          <div className="hero-peel-shape w-full h-full overflow-hidden bg-[var(--color-dark)] drop-shadow-[30px_30px_60px_rgba(0,59,27,0.1)]">
+            <div className="wipe-slider-container w-full h-full">
+              {/* Base layer - After / Clinic */}
+              <Image
+                src={heroConfig.images.base}
+                alt="Smile result achieved at our clinic"
+                fill
+                sizes="(max-width: 768px) 100vw, 55vw"
+                priority
+                className="object-cover"
+              />
+
+              {/* Overlay layer - Before / Lab */}
+              <div className="wipe-overlay" aria-hidden="true">
+                <Image
+                  src={heroConfig.images.overlay}
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 100vw, 55vw"
+                  className="wipe-layer object-cover"
+                />
+              </div>
             </div>
-            <div className="flex flex-col text-left">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-                Appointment Status
+          </div>
+
+          {/* Floating Live Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.5, ease: easing }}
+            className="absolute top-12 left-12 peel-card bg-white p-5 pr-7 shadow-xl z-20 max-w-[240px]"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="relative flex w-2.5 h-2.5">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-primary-light)] opacity-75 animate-ping" />
+                <span className="relative inline-flex rounded-full w-2.5 h-2.5 bg-[var(--color-primary)]" />
               </span>
-              <span className="text-sm font-bold text-dark-text leading-tight mt-0.5">
-                Availability
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-primary)]">
+                {heroConfig.liveBadge.label}
               </span>
-              <span className="text-xs text-accent font-bold mt-0.5">{settings?.bookingStatusMessage || 'Accepting New Patients'}</span>
             </div>
+            <p className="text-sm font-bold text-[var(--color-dark-text)] leading-snug">
+              {heroConfig.liveBadge.status}
+            </p>
+            <p className="text-xs font-semibold text-[var(--color-body-text)] mt-1">
+              {heroConfig.liveBadge.nextAvailable}
+            </p>
           </motion.div>
         </motion.div>
       </Container>

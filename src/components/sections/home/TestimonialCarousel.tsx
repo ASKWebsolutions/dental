@@ -1,152 +1,180 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion, Variants } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
-import Container from '@/components/ui/Container';
-import SectionHeading from '@/components/ui/SectionHeading';
 import { testimonials as staticTestimonials } from '@/data/testimonials';
 import { Testimonial } from '@/types';
 
-const testimonialImages = [
-  '/images/home/patient-avatar.png',
-  '/images/home/doctor-sarah.png',
-  '/images/home/doctor-elena.png',
-];
+const easing = [0.22, 1, 0.36, 1] as const;
+const AUTOPLAY_MS = 6000;
 
 interface TestimonialCarouselProps {
   initialTestimonials?: Testimonial[];
 }
 
-export const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ initialTestimonials }) => {
-  const displayTestimonials = initialTestimonials || staticTestimonials;
+export const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
+  initialTestimonials,
+}) => {
+  const displayTestimonials =
+    initialTestimonials && initialTestimonials.length > 0
+      ? initialTestimonials
+      : staticTestimonials;
+
   const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
-  const slideVariants: Variants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? 100 : -100,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      transition: { duration: 0.4, ease: 'easeOut' as const },
-    },
-    exit: (dir: number) => ({
-      x: dir < 0 ? 100 : -100,
-      opacity: 0,
-      transition: { duration: 0.3, ease: 'easeIn' as const },
-    }),
-  };
+  // Auto-play: advance every AUTOPLAY_MS, paused on hover and for reduced motion
+  useEffect(() => {
+    if (shouldReduceMotion || paused || displayTestimonials.length <= 1) return;
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % displayTestimonials.length);
+    }, AUTOPLAY_MS);
+    return () => clearInterval(timer);
+  }, [shouldReduceMotion, paused, displayTestimonials.length]);
 
-  const handleNext = () => {
-    setDirection(1);
-    setIndex((prevIndex) => (prevIndex + 1) % displayTestimonials.length);
+  if (!displayTestimonials.length) return null;
+
+  const current = displayTestimonials[index % displayTestimonials.length];
+
+  // Realistic paper-unwrap page flip, simplified to a fade for reduced motion
+  const pageVariants: Variants = {
+    enter: (dir: number) =>
+      shouldReduceMotion
+        ? { opacity: 0 }
+        : {
+            opacity: 0,
+            rotateY: dir > 0 ? 45 : -45,
+            scale: 0.95,
+            transformOrigin: dir > 0 ? 'top right' : 'bottom left',
+          },
+    center: shouldReduceMotion
+      ? { opacity: 1, transition: { duration: 0.4, ease: easing } }
+      : {
+          opacity: 1,
+          rotateY: 0,
+          scale: 1,
+          transition: { duration: 0.45, ease: easing },
+        },
+    exit: (dir: number) =>
+      shouldReduceMotion
+        ? { opacity: 0, transition: { duration: 0.3, ease: 'easeIn' } }
+        : {
+            opacity: 0,
+            rotateY: dir > 0 ? -45 : 45,
+            scale: 0.95,
+            transformOrigin: dir > 0 ? 'bottom left' : 'top right',
+            transition: { duration: 0.35, ease: 'easeIn' },
+          },
   };
 
   const handlePrev = () => {
     setDirection(-1);
-    setIndex((prevIndex) => (prevIndex - 1 + displayTestimonials.length) % displayTestimonials.length);
+    setIndex((prev) => (prev - 1 + displayTestimonials.length) % displayTestimonials.length);
+  };
+  const handleNext = () => {
+    setDirection(1);
+    setIndex((prev) => (prev + 1) % displayTestimonials.length);
   };
 
-  const currentTestimonial: Testimonial = displayTestimonials[index] ?? displayTestimonials[0] ?? { id: 'fallback', author: '', role: '', rating: 5, text: '' };
-  const currentImage = testimonialImages[index] || testimonialImages[0];
-
   return (
-    <section className="py-24 bg-white relative overflow-hidden flex flex-col justify-center items-center">
-      {/* Decorative 800px Circle Behind Content */}
-      <div className="absolute top-1/2 left-1/2 w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/5 pointer-events-none -z-10" />
+    <section className="py-16 md:py-24 px-6 bg-[var(--color-bg)] flex justify-center">
+      {/* Spotlight Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: easing }}
+        className="max-w-4xl w-full bg-[#ece2c3] rounded-[2rem] p-8 md:p-14 relative overflow-hidden shadow-xl text-left"
+        style={{ perspective: 1000 }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        {/* Top-Right "Next Review" Peeled Corner */}
+        <button
+          onClick={handleNext}
+          title="Next Review"
+          aria-label="Next review"
+          className="absolute top-0 right-0 w-16 h-16 bg-[var(--color-bg)] cursor-pointer group z-30 hover:scale-105 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-inset"
+          style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }}
+        >
+          {/* Subtle shadow/peel visual hint on hover */}
+          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
+          {/* Corner turn indicator */}
+          <ChevronRight className="absolute bottom-2 left-2 w-4 h-4 text-[var(--color-primary)]/40 group-hover:text-[var(--color-primary)] transition-colors" />
+        </button>
 
-      <Container className="max-w-4xl relative z-10 flex flex-col items-center text-center">
-        {/* Header Eyebrow */}
-        <div className="mb-10 flex flex-col items-center">
-          <SectionHeading eyebrow="Testimonials" title="Stories of Transformed Lives" showDots={true} />
-        </div>
+        <AnimatePresence initial={false} mode="wait" custom={direction}>
+          <motion.div
+            key={`${current.id}-${index}`}
+            custom={direction}
+            variants={pageVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className="relative z-10"
+          >
+            {/* Quote Icon */}
+            <Quote className="w-8 h-8 text-[var(--color-primary)] rotate-180 mb-4" aria-hidden="true" />
 
-        {/* Quotes Block */}
-        <div className="relative w-full min-h-[300px] flex flex-col items-center justify-center py-4 px-6 sm:px-12">
-          {/* Quote Icon Background */}
-          <div className="absolute top-0 text-accent/10 pointer-events-none -z-10 animate-pulse">
-            <Quote className="w-20 h-20 rotate-180" />
-          </div>
+            {/* Quote Text */}
+            <blockquote className="font-serif italic text-lg md:text-2xl text-[var(--color-primary)] leading-relaxed mb-8 max-w-3xl">
+              {current.text}
+            </blockquote>
 
-          <AnimatePresence initial={false} custom={direction} mode="wait">
-            <motion.div
-              key={currentTestimonial.id}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              className="flex flex-col items-center"
-            >
-              {/* Quote Text */}
-              <blockquote className="font-serif font-medium text-lg sm:text-2xl lg:text-3xl text-primary leading-relaxed sm:leading-loose mb-10 max-w-3xl">
-                "{currentTestimonial.text}"
-              </blockquote>
-
-              {/* Author Section */}
-              <div className="flex flex-col items-center gap-4">
-                {/* Profile Photo */}
-                <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-primary-soft shadow-md bg-slate-100 shrink-0">
-                  <Image
-                    src={currentImage}
-                    alt={currentTestimonial.author ? `${currentTestimonial.author}'s photo` : 'Patient photo'}
-                    fill
-                    sizes="80px"
-                    className="object-cover"
-                  />
-                </div>
-                {/* Author Info */}
-                <div className="flex flex-col">
-                  <cite className="not-italic font-serif font-bold text-lg text-dark-text">
-                    {currentTestimonial.author}
-                  </cite>
-                  <span className="font-sans font-bold text-[11px] uppercase tracking-widest text-accent mt-1">
-                    {currentTestimonial.role}
-                  </span>
-                </div>
+            {/* Patient Details Row */}
+            <div className="flex items-center gap-4">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white shrink-0 bg-slate-100">
+                <Image
+                  src="/images/home/patient-avatar.png"
+                  alt={`${current.author}'s photo`}
+                  fill
+                  sizes="56px"
+                  className="object-cover"
+                />
               </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+              <div className="flex flex-col gap-0.5">
+                <cite className="not-italic font-serif font-bold text-base md:text-lg text-[var(--color-primary)]">
+                  {current.author}
+                </cite>
+                <span className="text-xs font-bold tracking-widest uppercase text-[var(--color-body-text)]">
+                  {current.role}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
-        {/* Carousel Controls */}
-        <div className="flex items-center justify-center gap-6 mt-10">
-          <button
-            onClick={handlePrev}
-            className="p-3 rounded-full border border-border/80 bg-white hover:bg-primary-light text-primary hover:border-primary-soft transition-all duration-300 shadow-sm cursor-pointer active:scale-95"
-            aria-label="Previous testimonial"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          {/* Dots Indicator */}
-          <div className="flex items-center gap-2">
-            {displayTestimonials.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => {
-                  setDirection(i > index ? 1 : -1);
-                  setIndex(i);
-                }}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-350 cursor-pointer ${
-                  i === index ? 'bg-accent w-6' : 'bg-primary-soft/50'
-                }`}
-                aria-label={`Go to testimonial ${i + 1}`}
-              />
-            ))}
-          </div>
-          <button
-            onClick={handleNext}
-            className="p-3 rounded-full border border-border/80 bg-white hover:bg-primary-light text-primary hover:border-primary-soft transition-all duration-300 shadow-sm cursor-pointer active:scale-95"
-            aria-label="Next testimonial"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+        {/* Bottom-Left "Previous Review" Peeled Corner */}
+        <button
+          onClick={handlePrev}
+          title="Previous Review"
+          aria-label="Previous review"
+          className="absolute bottom-0 left-0 w-16 h-16 bg-[var(--color-bg)] cursor-pointer group z-30 hover:scale-105 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-inset"
+          style={{ clipPath: 'polygon(0 100%, 0 0, 100% 100%)' }}
+        >
+          {/* Subtle shadow/peel visual hint on hover */}
+          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
+          {/* Corner turn indicator */}
+          <ChevronLeft className="absolute top-2 right-2 w-4 h-4 text-[var(--color-primary)]/40 group-hover:text-[var(--color-primary)] transition-colors" />
+        </button>
+
+        {/* Dots Indicator - subtle */}
+        <div className="flex items-center justify-center gap-2 mt-8 pt-6 border-t border-[var(--color-primary)]/10">
+          {displayTestimonials.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setIndex(i)}
+              aria-label={`Go to testimonial ${i + 1}`}
+              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                i === index ? 'w-6 bg-[var(--color-primary)]' : 'w-2 bg-[var(--color-primary)]/25 hover:bg-[var(--color-primary)]/40'
+              }`}
+            />
+          ))}
         </div>
-      </Container>
+      </motion.div>
     </section>
   );
 };

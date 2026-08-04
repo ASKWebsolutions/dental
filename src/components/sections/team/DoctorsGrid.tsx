@@ -1,25 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion, Variants } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { Doctor } from '@/types';
 import { resolveImageUrl } from '@/lib/media';
 
-export const DoctorsGrid: React.FC = () => {
-  const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
+interface DoctorsGridProps {
+  doctors: Doctor[];
+  onViewProfile: (doctor: Doctor) => void;
+}
 
-  useEffect(() => {
-    fetch('/api/doctors')
-      .then((res) => res.json())
-      .then(setAllDoctors)
-      .catch(() => {});
-  }, []);
-
+export const DoctorsGrid: React.FC<DoctorsGridProps> = ({ doctors, onViewProfile }) => {
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -57,24 +51,24 @@ export const DoctorsGrid: React.FC = () => {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          animate={allDoctors.length > 0 ? 'visible' : 'hidden'}
+          animate={doctors.length > 0 ? 'visible' : 'hidden'}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full min-h-[400px]"
         >
-          {allDoctors.map((doc, idx) => (
+          {doctors.map((doc, idx) => (
             <motion.div
               key={doc.id || idx}
               variants={cardVariants}
               className="bg-white rounded-3xl p-6 sm:p-7 shadow-card border border-slate-100 flex flex-col justify-between h-full text-left group hover:-translate-y-1.5 hover:shadow-lg transition-all duration-300 relative overflow-hidden"
             >
               <div>
-                {/* Photo Frame */}
+                {/* Photo Frame - grayscale to color on hover */}
                 <div className="relative w-full h-[260px] sm:h-[280px] rounded-2xl overflow-hidden bg-slate-100 mb-6 shrink-0">
                   <Image
                     src={resolveImageUrl(doc.imagePath, '/images/home/doctor-elena.png')}
                     alt={doc.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 360px"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
                 </div>
@@ -88,20 +82,19 @@ export const DoctorsGrid: React.FC = () => {
                 </p>
 
                 {/* Bio */}
-                <p className="text-sm text-body-text leading-relaxed font-sans font-normal mb-5">
+                <p className="text-sm text-body-text leading-relaxed font-sans font-normal mb-5 line-clamp-3">
                   {doc.bio}
                 </p>
               </div>
 
-              {/* Action Link to Consultation */}
+              {/* View Profile Action */}
               <div className="pt-4 border-t border-slate-100 mt-auto">
-                <Link
-                  href={`/book-appointment?doctor=${encodeURIComponent(doc.id)}`}
-                  className="text-primary hover:text-accent font-sans font-bold text-xs inline-flex items-center gap-1.5 transition-colors group/link"
+                <button
+                  onClick={() => onViewProfile(doc)}
+                  className="w-full py-2.5 px-4 rounded-full border border-gray-200 hover:border-emerald-700 hover:text-emerald-700 text-xs font-semibold text-gray-700 transition-colors cursor-pointer"
                 >
-                  <span>Book Appointment with {doc.name.split(' ')[1] || doc.name}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform duration-300" />
-                </Link>
+                  View Profile
+                </button>
               </div>
             </motion.div>
           ))}

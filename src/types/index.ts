@@ -57,6 +57,15 @@ export interface Service {
   featured?: boolean;
 }
 
+export interface HomeService {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+  order?: number;
+}
+
 export interface TeamMember {
   id: string;
   name: string;
@@ -73,10 +82,14 @@ export interface Doctor {
   title: string;
   bio: string;
   imagePath: string;
+  quote?: string;
+  experience?: string;
   specialties?: string[];
   education?: string[];
   displayOrder?: number;
   featured?: boolean;
+  isFounder?: boolean;
+  isAvailable?: boolean;
 }
 
 export interface Testimonial {
@@ -100,4 +113,28 @@ export interface StatItem {
   numericValue: number; // for animations
   label: string;
   description: string;
+}
+
+export type HeroTrustIcon = 'ShieldCheck' | 'Award';
+
+export interface HeroConfig {
+  eyebrow: string;
+  headline: {
+    line1: string;
+    highlight: string;
+    line2: string;
+  };
+  subtitle: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta: { label: string; href: string };
+  trustBar: { icon: HeroTrustIcon; label: string }[];
+  images: {
+    base: string; // After / Clinic visual (bottom layer)
+    overlay: string; // Before / Lab visual (wipe top layer)
+  };
+  liveBadge: {
+    label: string; // e.g. "LIVE UPDATES"
+    status: string; // e.g. "Accepting New Patients"
+    nextAvailable: string; // e.g. "Next available: Dec 14"
+  };
 }

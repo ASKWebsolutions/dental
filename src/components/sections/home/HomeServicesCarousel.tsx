@@ -1,209 +1,168 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { motion, AnimatePresence, useReducedMotion, Variants } from 'framer-motion';
-import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
 import Container from '@/components/ui/Container';
-import SectionHeading from '@/components/ui/SectionHeading';
-import { Service } from '@/types';
-import { services as staticServices } from '@/data/services';
+import { HomeService } from '@/types';
+import homeServices from '@/data/homeServices';
+import { resolveImageUrl } from '@/lib/media';
 
 interface HomeServicesCarouselProps {
-  initialServices?: Service[];
+  initialServices?: HomeService[];
 }
+
+const easing = [0.22, 1, 0.36, 1] as const;
+const SCROLL_SPEED = 1.2;
 
 export const HomeServicesCarousel: React.FC<HomeServicesCarouselProps> = ({
   initialServices,
 }) => {
-  const allServices = initialServices && initialServices.length > 0 ? initialServices : staticServices;
+  const [services, setServices] = useState<HomeService[]>(
+    initialServices && initialServices.length > 0 ? initialServices : homeServices
+  );
 
-  // Requirement 1 & 8: Filter to ONLY featured services. If zero are marked featured, fall back to all services.
-  const featuredServices = allServices.filter((s) => s.featured === true);
-  const displayServices = featuredServices.length > 0 ? featuredServices : allServices;
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isPaused = useRef(false);
+  const dragState = useRef<{ startX: number; startScrollLeft: number } | null>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  if (!displayServices || displayServices.length === 0) {
-    return null;
-  }
+  // Client-side dynamic fetch from public API, falling back to static homeServices
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/home-services')
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && Array.isArray(data) && data.length > 0) {
+          setServices(data);
+        }
+      })
+      .catch(() => {
+        // silently keep static fallback
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-  const handlePrev = () => {
-    setDirection(-1);
-    setCurrentIndex((prev) => (prev === 0 ? displayServices.length - 1 : prev - 1));
+  // Continuous auto-scroll loop (pauses on hover/drag, disabled for reduced motion)
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || shouldReduceMotion) return;
+
+    let rafId = 0;
+    const tick = () => {
+      if (!isPaused.current) {
+        const firstHalf = el.scrollWidth / 2;
+        el.scrollLeft += SCROLL_SPEED;
+        if (el.scrollLeft >= firstHalf) {
+          el.scrollLeft -= firstHalf;
+        }
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [shouldReduceMotion, services.length]);
+
+  const defaultFallback = '/images/home/dental-implants.png';
+  // Duplicate the list once for a seamless infinite loop
+  const displayServices = [...services, ...services];
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    isPaused.current = true;
+    dragState.current = { startX: e.clientX, startScrollLeft: e.currentTarget.scrollLeft };
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
-  const handleNext = () => {
-    setDirection(1);
-    setCurrentIndex((prev) => (prev === displayServices.length - 1 ? 0 : prev + 1));
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragState.current) return;
+    const dx = e.clientX - dragState.current.startX;
+    e.currentTarget.scrollLeft = dragState.current.startScrollLeft - dx;
   };
 
-  const currentService = displayServices[currentIndex];
-
-  // Default fallback image if service.imagePath is missing
-  const cardImage = currentService.imagePath || '/images/home/dental-implants.png';
-
-  const slideVariants: Variants = {
-    enter: (dir: number) => ({
-      x: shouldReduceMotion ? 0 : dir > 0 ? 60 : -60,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        duration: shouldReduceMotion ? 0 : 0.45,
-        ease: 'easeOut' as const,
-      },
-    },
-    exit: (dir: number) => ({
-      x: shouldReduceMotion ? 0 : dir > 0 ? -60 : 60,
-      opacity: 0,
-      transition: {
-        duration: shouldReduceMotion ? 0 : 0.35,
-        ease: 'easeIn' as const,
-      },
-    }),
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragState.current = null;
+    isPaused.current = false;
+    e.currentTarget.releasePointerCapture(e.pointerId);
   };
 
   return (
-    <section className="py-20 md:py-24 bg-bg overflow-hidden">
+    <section className="py-20 md:py-24 bg-[var(--color-bg)] overflow-hidden">
       <Container>
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-12 w-full">
-          <SectionHeading
-            eyebrow="Our Services"
-            title="Bespoke Treatments Designed for You"
-            showDots={true}
-            align="left"
-            className="max-w-xl"
-          />
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: easing }}
+          className="mb-12"
+        >
+          <div className="w-8 h-px bg-[var(--color-primary)] inline-block mr-3"></div>
+          <span className="text-xs font-bold tracking-widest text-[var(--color-primary)]">
+            Premium Services
+          </span>
+          <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[var(--color-dark-text)] mt-2">
+            Curated clinical solutions.
+          </h2>
+        </motion.div>
 
-          <div className="flex items-center gap-4 shrink-0">
-            {/* View All Services Link */}
-            <Link
-              href="/services"
-              className="text-sm font-bold text-accent hover:text-primary transition-colors flex items-center gap-1.5 group mr-2"
-            >
-              <span>View All Services</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
-            </Link>
-
-            {/* Carousel Navigation Arrows */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handlePrev}
-                aria-label="Previous service"
-                className="w-12 h-12 rounded-full border border-slate-200 bg-white text-primary shadow-sm flex items-center justify-center transition-all duration-300 hover:bg-primary hover:text-white hover:border-primary hover:scale-105 active:scale-95 cursor-pointer"
+        {/* Auto-Scrolling Card Track */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: easing }}
+        >
+          <div
+            ref={scrollRef}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            onMouseEnter={() => {
+              if (!dragState.current) isPaused.current = true;
+            }}
+            onMouseLeave={() => {
+              if (!dragState.current) isPaused.current = false;
+            }}
+            onTouchStart={() => {
+              isPaused.current = true;
+            }}
+            onTouchEnd={() => {
+              isPaused.current = false;
+            }}
+            className="no-scrollbar overflow-x-auto flex gap-6 pb-4 cursor-grab active:cursor-grabbing select-none"
+          >
+            {displayServices.map((service, idx) => (
+              <article
+                key={`${service.id}-${idx}`}
+                className="w-[320px] lg:w-[350px] flex-shrink-0 group"
               >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              <button
-                onClick={handleNext}
-                aria-label="Next service"
-                className="w-12 h-12 rounded-full border border-slate-200 bg-white text-primary shadow-sm flex items-center justify-center transition-all duration-300 hover:bg-primary hover:text-white hover:border-primary hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
+                {/* Image Container */}
+                <div className="relative h-[420px] rounded-2xl overflow-hidden mb-4">
+                  <Image
+                    src={resolveImageUrl(service.image, defaultFallback)}
+                    alt={service.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 350px"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {/* Gradient Overlay + Reveal Badge on Hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-0 left-0 right-0 p-5 text-white translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                    <span className="text-xs font-bold tracking-widest text-[#b1f2be]">
+                      {service.category}
+                    </span>
+                    <h3 className="font-serif text-2xl font-bold mt-1">{service.title}</h3>
+                  </div>
+                </div>
+                {/* Clean 2-line clamped description */}
+                <p className="text-sm text-[var(--color-body-text)] line-clamp-2 leading-relaxed px-1">
+                  {service.description}
+                </p>
+              </article>
+            ))}
           </div>
-        </div>
-
-        {/* Carousel Single Card Container */}
-        <div className="relative w-full overflow-hidden min-h-[480px] md:min-h-[520px] rounded-[40px] shadow-card border border-slate-100 bg-slate-900">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={currentService.id || currentIndex}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 select-none group"
-            >
-              {/* Full-bleed Background Image */}
-              <Image
-                src={cardImage}
-                alt={currentService.title}
-                fill
-                sizes="(max-width: 1024px) 100vw, 1200px"
-                className="object-cover group-hover:scale-102 transition-transform duration-700"
-                priority
-              />
-
-              {/* Dark Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/50 to-transparent z-10 pointer-events-none" />
-
-
-
-              {/* Bottom Card Content */}
-              <div className="relative z-20 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 w-full">
-                <div className="max-w-2xl text-left">
-                  <h3 className="font-serif font-bold text-2xl sm:text-3xl md:text-4xl text-white mb-3 tracking-tight">
-                    {currentService.title}
-                  </h3>
-                  <p className="text-sm md:text-base text-body-text-dark/90 leading-relaxed font-sans font-normal mb-5">
-                    {currentService.shortDescription}
-                  </p>
-
-                  {/* Bullets: Rendered ONLY if the service has bullets */}
-                  {currentService.bullets && currentService.bullets.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {currentService.bullets.map((bullet, idx) => (
-                        <span
-                          key={idx}
-                          className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md text-white/95 text-xs font-sans font-medium px-3.5 py-1.5 rounded-full border border-white/15"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-                          {bullet}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Corner Action Buttons (Learn More + Book Consultation) */}
-                <div className="flex items-center gap-3 shrink-0 self-end md:self-auto">
-                  <Link
-                    href={`/book-appointment?service=${encodeURIComponent(currentService.slug)}`}
-                    className="inline-flex items-center justify-center font-bold text-xs px-5 py-3 rounded-full bg-accent text-white hover:bg-accent-hover transition-all shadow-md cursor-pointer"
-                  >
-                    Book Appointment
-                  </Link>
-
-                  <Link
-                    href={`/services/${currentService.slug}`}
-                    aria-label={`Learn more about ${currentService.title}`}
-                    className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-primary shadow-lg hover:scale-105 transition-transform duration-300 shrink-0 cursor-pointer"
-                  >
-                    <ArrowUpRight className="w-5 h-5" />
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Dot Indicators */}
-        <div className="flex items-center gap-2 mt-6 px-2">
-          {displayServices.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                setDirection(idx > currentIndex ? 1 : -1);
-                setCurrentIndex(idx);
-              }}
-              aria-label={`Go to slide ${idx + 1}`}
-              className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                idx === currentIndex ? 'w-8 bg-accent' : 'w-2.5 bg-slate-300 hover:bg-slate-400'
-              }`}
-            />
-          ))}
-        </div>
+        </motion.div>
       </Container>
     </section>
   );

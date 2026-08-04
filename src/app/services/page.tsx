@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import ServicesHero from '@/components/sections/services/ServicesHero';
-import ServicesGrid from '@/components/sections/services/ServicesGrid';
 import { getServices } from '@/data/services';
 
 export const metadata: Metadata = {
@@ -15,8 +14,7 @@ export default async function ServicesPage() {
 
   return (
     <>
-      <ServicesHero />
-      <ServicesGrid initialServices={initialServices} />
+      <ServicesHero initialServices={initialServices} />
     </>
   );
 }

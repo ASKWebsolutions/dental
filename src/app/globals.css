@@ -41,15 +41,19 @@
   --color-cta-input-bg: #F0F0F0;
 
   /* Theme mappings for styling consistency */
+  --color-primary-hover: #005030;
+  --color-accent-hover: #1A1A1A;
+  --color-dark-hover: #222222;
+
   --background: var(--color-bg);
   --foreground: var(--color-dark-text);
   
   --primary: var(--color-primary);
-  --primary-hover: #005030;
+  --primary-hover: var(--color-primary-hover);
   --accent: var(--color-accent);
-  --accent-hover: #1A1A1A;
+  --accent-hover: var(--color-accent-hover);
   --dark: var(--color-dark);
-  --dark-hover: #222222;
+  --dark-hover: var(--color-dark-hover);
 
   --border: var(--color-border);
   --input: var(--color-border);
@@ -58,15 +62,18 @@
 
 @theme {
   --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
   --color-primary-light: var(--color-primary-light);
   --color-primary-soft: var(--color-primary-soft);
   --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
   --color-accent-soft: var(--color-accent-soft);
   --color-accent-dark: var(--color-accent-dark);
+  --color-dark: var(--color-dark);
+  --color-dark-hover: var(--color-dark-hover);
   --color-bg: var(--color-bg);
   --color-bg-alt: var(--color-bg-alt);
   --color-bg-blue-soft: var(--color-bg-blue-soft);
-  --color-dark: var(--color-dark);
   --color-dark-text: var(--color-dark-text);
   --color-body-text: var(--color-body-text);
   --color-body-text-dark: var(--color-body-text-dark);
@@ -168,4 +175,96 @@ body {
 
 .btn-diagonal-stripe:hover::before {
   left: 150%;
+}
+
+/* ---- Hero Peel Shape Container ---- */
+.hero-peel-shape {
+  clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 20%);
+  border-radius: 0 0 0 120px;
+}
+
+/* ---- Peel Card Badge ---- */
+.peel-card {
+  clip-path: polygon(0 0, 85% 0, 100% 15%, 100% 100%, 0 100%);
+}
+
+/* ---- Wipe Slider Animation ---- */
+.wipe-slider-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.wipe-overlay {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  overflow: hidden;
+  border-right: 2px solid white;
+  animation: wipeMove 8s infinite alternate cubic-bezier(0.445, 0.05, 0.55, 0.95);
+}
+
+@keyframes wipeMove {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+/*
+ * Size the wipe overlay image to the full slider container (not the
+ * animating clip box), so the before/after layers stay pixel-aligned
+ * while the overlay width sweeps 0% -> 100%.
+ */
+.wipe-overlay .wipe-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* ---- Smile Underline Effect ---- */
+.smile-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.smile-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.1em;
+  height: 0.35em;
+  background: #b1f2be;
+  clip-path: ellipse(50% 40% at 50% 100%);
+  transform: scaleX(0);
+  transform-origin: center;
+  z-index: -1;
+  animation: underlineGrow 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.8s forwards;
+}
+
+@keyframes underlineGrow {
+  to { transform: scaleX(1); }
+}
+
+/* Respect reduced motion preferences for CSS-driven hero effects */
+@media (prefers-reduced-motion: reduce) {
+  .wipe-overlay {
+    animation: none;
+    width: 50%;
+  }
+  .smile-underline::after {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
+/* ---- Hide Scrollbar (Services Carousel) ---- */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
