@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import ServicesHero from '@/components/sections/services/ServicesHero';
+import ConsultationBanner from '@/components/sections/services/ConsultationBanner';
+import VisitOurStudio from '@/components/sections/services/VisitOurStudio';
 import { getServices } from '@/data/services';
+import { getClinicSettings } from '@/lib/contact';
 
 export const metadata: Metadata = {
   title: 'Our Services',
@@ -11,10 +14,13 @@ export const metadata: Metadata = {
 
 export default async function ServicesPage() {
   const initialServices = await getServices();
+  const settings = await getClinicSettings();
 
   return (
     <>
       <ServicesHero initialServices={initialServices} />
+      <ConsultationBanner />
+      <VisitOurStudio settings={settings} />
     </>
   );
 }

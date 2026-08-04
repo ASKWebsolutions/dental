@@ -63,7 +63,6 @@ export const DoctorModal: React.FC<DoctorModalProps> = ({ doctor, onClose }) => 
 
   if (!doctor) return null;
 
-  const firstName = doctor.name.replace(/^Dr\.?\s*/i, '').split(' ')[0];
   const education = (doctor.education ?? []).filter(Boolean);
   const specialties = (doctor.specialties ?? []).filter(Boolean);
   const quote = doctor.quote?.trim();
@@ -198,7 +197,7 @@ export const DoctorModal: React.FC<DoctorModalProps> = ({ doctor, onClose }) => 
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-primary text-white hover:bg-primary-hover btn-diagonal-stripe shadow-md transition-all duration-300 text-xs font-bold"
                 >
                   <Calendar className="w-4 h-4" />
-                  Book Appointment with {firstName}
+                  Book Appointment with {doctor.name}
                 </Link>
               </div>
             </div>

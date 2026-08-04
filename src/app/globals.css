@@ -260,6 +260,15 @@ body {
   }
 }
 
+/* ---- Hide Scrollbar Globally (Main Window) ---- */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
 /* ---- Hide Scrollbar (Services Carousel) ---- */
 .no-scrollbar {
   scrollbar-width: none;

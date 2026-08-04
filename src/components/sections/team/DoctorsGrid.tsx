@@ -2,9 +2,10 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, Variants } from 'framer-motion';
+import { UserPlus } from 'lucide-react';
 import Container from '@/components/ui/Container';
-import SectionHeading from '@/components/ui/SectionHeading';
 import { Doctor } from '@/types';
 import { resolveImageUrl } from '@/lib/media';
 
@@ -31,28 +32,22 @@ export const DoctorsGrid: React.FC<DoctorsGridProps> = ({ doctors, onViewProfile
     },
   };
 
-  return (
-    <section className="py-20 md:py-24 bg-bg-alt overflow-hidden">
-      <Container className="flex flex-col items-center">
-        {/* Header Block */}
-        <div className="text-center flex flex-col items-center mb-16 max-w-2xl">
-          <SectionHeading
-            eyebrow="Our Dental Specialists"
-            title="World-Class Clinical Mastery & Artistic Vision"
-            highlightedText="Clinical Mastery"
-            highlightColor="teal-clean"
-            subtitle="Meet our multidisciplinary team of cosmetic surgeons, implantologists, and aesthetic specialists dedicated to restoring your smile."
-            align="center"
-            showDots={true}
-          />
-        </div>
+  // Join card spans to fill whatever slots remain on the last row (md 2-col / lg 3-col)
+  const mdSpan = doctors.length % 2 === 0 ? 2 : 1;
+  const lgSpan = 3 - (doctors.length % 3);
+  const joinColSpanClass = `${mdSpan === 2 ? 'md:col-span-2' : 'md:col-span-1'} ${
+    lgSpan === 1 ? 'lg:col-span-1' : lgSpan === 2 ? 'lg:col-span-2' : 'lg:col-span-3'
+  }`;
 
-        {/* 3-Column Responsive Doctors Grid */}
+  return (
+    <section className="py-8 md:py-12 bg-bg-alt overflow-hidden">
+      <Container>
+        {/* Unified 3-Column Doctors Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={doctors.length > 0 ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full min-h-[400px]"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full min-h-[400px]"
         >
           {doctors.map((doc, idx) => (
             <motion.div
@@ -98,6 +93,26 @@ export const DoctorsGrid: React.FC<DoctorsGridProps> = ({ doctors, onViewProfile
               </div>
             </motion.div>
           ))}
+
+          {/* Join Our Team card — spans to balance the final grid row */}
+          <motion.div
+            variants={cardVariants}
+            className={`bg-white rounded-3xl p-6 sm:p-7 shadow-card border border-slate-100 flex flex-col items-center justify-center text-center h-full group hover:-translate-y-1.5 hover:shadow-lg transition-all duration-300 ${joinColSpanClass}`}
+          >
+            <div className="w-16 h-16 rounded-2xl bg-primary-light/20 text-primary flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
+              <UserPlus className="w-7 h-7" />
+            </div>
+            <h3 className="font-serif font-bold text-2xl text-primary mb-2">Join Our Team</h3>
+            <p className="text-sm text-body-text leading-relaxed font-sans font-normal mb-6 max-w-[240px]">
+              We are always looking for world-class specialists.
+            </p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center px-7 py-2.5 rounded-full border border-gray-200 hover:border-emerald-700 hover:text-emerald-700 text-xs font-semibold text-gray-700 transition-colors"
+            >
+              Explore Careers
+            </Link>
+          </motion.div>
         </motion.div>
       </Container>
     </section>

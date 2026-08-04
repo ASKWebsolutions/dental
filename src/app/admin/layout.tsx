@@ -68,6 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const isLoginPage = pathname === '/admin/login';
 
   useEffect(() => {
     const saved = localStorage.getItem('admin_sidebar_collapsed');
@@ -76,13 +77,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, []);
 
+  useEffect(() => {
+    if (isLoginPage) {
+      document.body.classList.remove('overflow-hidden');
+      return;
+    }
+    document.body.classList.add('overflow-hidden');
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [isLoginPage]);
+
   const toggleCollapse = () => {
     const newVal = !isCollapsed;
     setIsCollapsed(newVal);
     localStorage.setItem('admin_sidebar_collapsed', String(newVal));
   };
-
-  const isLoginPage = pathname === '/admin/login';
 
   const handleLogout = async () => {
     await fetch('/api/admin/logout', { method: 'POST' });

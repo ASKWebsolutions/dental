@@ -6,7 +6,7 @@ import GalleryCTA from '@/components/sections/gallery/GalleryCTA';
 import { getGalleryItems } from '@/lib/gallery';
 
 export const metadata: Metadata = {
-  title: 'Smile Gallery - Before & After Cases',
+  title: 'Transformation Portfolio - Before & After Cases',
   description:
     'Witness the cosmetic smile makeovers, dental implants transformations, and orthodontic alignment cases completed at Dental Cosmetics & Implant Centre.',
 };

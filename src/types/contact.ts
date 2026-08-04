@@ -19,7 +19,7 @@ export interface ContactFormInput {
   fullName: string;
   serviceInterest: string;
   email: string;
-  phone: string;
-  whatsapp: string;
+  phone?: string;
+  whatsapp?: string;
   message?: string;
 }

@@ -10,8 +10,8 @@ export async function submitContactForm(data: ContactFormInput) {
       fullName: data.fullName,
       serviceInterest: data.serviceInterest,
       email: data.email,
-      phone: data.phone,
-      whatsapp: data.whatsapp,
+      phone: data.phone || '',
+      whatsapp: data.whatsapp || null,
       message: data.message || '',
       status: 'new',
       isRead: false,
@@ -34,7 +34,8 @@ export async function getClinicSettings() {
       };
     }
   } catch (error) {
-    console.warn('getClinicSettings fetch failed, using fallback settings:', (error as any)?.message || error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn('getClinicSettings fetch failed, using fallback settings:', message);
   }
 
   // Seeding fallback to maintain layout rendering

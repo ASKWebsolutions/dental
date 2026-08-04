@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Doctor } from '@/types';
 import TeamHero from './TeamHero';
-import FounderSpotlight from './FounderSpotlight';
+import FeaturedDoctors from './FeaturedDoctors';
 import DoctorsGrid from './DoctorsGrid';
 import DoctorModal from './DoctorModal';
 
@@ -21,12 +21,20 @@ export const TeamPageContent: React.FC = () => {
   }, []);
 
   const founder = allDoctors.find((d) => d.isFounder) ?? allDoctors[0] ?? null;
+  const adjacent = allDoctors.find((d) => d.id !== founder?.id) ?? null;
+  const gridDoctors = allDoctors.filter(
+    (d) => d.id !== founder?.id && d.id !== adjacent?.id
+  );
 
   return (
     <>
       <TeamHero />
-      <FounderSpotlight founder={founder} onViewProfile={setSelectedDoctor} />
-      <DoctorsGrid doctors={allDoctors} onViewProfile={setSelectedDoctor} />
+      <FeaturedDoctors
+        founder={founder}
+        adjacent={adjacent}
+        onViewProfile={setSelectedDoctor}
+      />
+      <DoctorsGrid doctors={gridDoctors} onViewProfile={setSelectedDoctor} />
       <DoctorModal doctor={selectedDoctor} onClose={() => setSelectedDoctor(null)} />
     </>
   );

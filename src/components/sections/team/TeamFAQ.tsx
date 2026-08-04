@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import Tooth from '@/components/ui/Tooth';
 import Container from '@/components/ui/Container';
 
 interface FAQItem {
@@ -40,8 +41,8 @@ export const TeamFAQ: React.FC = () => {
       <Container className="max-w-[768px] flex flex-col items-center">
         {/* Header Block */}
         <div className="text-center flex flex-col items-center mb-16">
-          <span className="font-sans font-bold text-xs uppercase tracking-[1.4px] text-accent mb-3 block">
-            FAQ
+          <span className="font-sans font-bold text-xs uppercase tracking-[1.4px] text-primary mb-3 block">
+            Common Inquiries
           </span>
           <h2 className="font-serif font-bold text-3xl md:text-4xl text-hero-heading-dark tracking-[-0.6px]">
             Frequently Asked Questions
@@ -62,12 +63,23 @@ export const TeamFAQ: React.FC = () => {
                   className="w-full px-6 py-5 flex items-center justify-between text-left font-semibold text-hero-heading-dark hover:text-primary transition-colors focus:outline-none cursor-pointer"
                   aria-expanded={isOpen}
                 >
-                  <span>{faq.question}</span>
-                  <ChevronDown
-                    className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-300 ${
-                      isOpen ? 'rotate-180 text-primary' : ''
+                  <span className="flex items-center gap-3">
+                    <Tooth
+                      className={`w-4 h-4 shrink-0 transition-colors duration-300 ${
+                        isOpen ? 'text-primary' : 'text-slate-300'
+                      }`}
+                    />
+                    {faq.question}
+                  </span>
+                  <span
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                      isOpen
+                        ? 'bg-primary text-white rotate-45'
+                        : 'bg-primary-light/20 text-primary'
                     }`}
-                  />
+                  >
+                    <Plus className="w-4 h-4" />
+                  </span>
                 </button>
 
                 {/* Animated content expansion */}
