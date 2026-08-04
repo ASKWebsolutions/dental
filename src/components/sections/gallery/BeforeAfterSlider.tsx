@@ -10,19 +10,25 @@ interface BeforeAfterSliderProps {
   beforeImage?: GalleryImage | null;
   afterImage?: GalleryImage | null;
   title?: string;
+  beforeLabel?: string;
+  afterLabel?: string;
 }
 
 export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
   beforeImage,
   afterImage,
   title,
+  beforeLabel,
+  afterLabel,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(50);
-  const [dragging, setDragging] = useState(false);
 
   const beforeUrl = resolveThumbnailUrl(beforeImage);
   const afterUrl = resolveThumbnailUrl(afterImage);
+
+  const displayBeforeLabel = beforeLabel || 'Before Treatment';
+  const displayAfterLabel = afterLabel || 'After Transformation';
 
   const updateFromClientX = useCallback((clientX: number) => {
     const el = containerRef.current;
@@ -32,17 +38,21 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
     setPosition(next);
   }, []);
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    setDragging(true);
-    updateFromClientX(e.clientX);
-  };
-
+  // Tracks cursor on hover (mouse move) and drags (touch / press) continuously
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragging) return;
     updateFromClientX(e.clientX);
   };
 
-  const stopDragging = () => setDragging(false);
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    updateFromClientX(e.clientX);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowLeft') {
@@ -63,11 +73,10 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       aria-valuemax={100}
       aria-valuenow={Math.round(position)}
       tabIndex={0}
-      onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
-      onPointerUp={stopDragging}
-      onPointerCancel={stopDragging}
-      onPointerLeave={stopDragging}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       onKeyDown={handleKeyDown}
       className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] select-none touch-none cursor-ew-resize overflow-hidden rounded-2xl bg-slate-900 shadow-card focus:outline-none focus-visible:ring-2 focus-visible:ring-[#003b1b]"
     >
@@ -107,11 +116,19 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       </div>
 
       {/* Floating badges */}
-      <div className="absolute top-4 left-4 z-20 bg-emerald-950/80 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-sm pointer-events-none">
-        Before Treatment
+      <div
+        className={`absolute top-4 left-4 z-20 bg-emerald-950/80 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-sm pointer-events-none transition-opacity duration-300 ${
+          position > 15 ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        {displayBeforeLabel}
       </div>
-      <div className="absolute top-4 right-4 z-20 bg-white/90 text-[#18181b] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-sm pointer-events-none">
-        After Transformation
+      <div
+        className={`absolute top-4 right-4 z-20 bg-white/90 text-[#18181b] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-sm pointer-events-none transition-opacity duration-300 ${
+          position < 85 ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        {displayAfterLabel}
       </div>
     </div>
   );

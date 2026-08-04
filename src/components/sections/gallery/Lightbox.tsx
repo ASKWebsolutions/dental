@@ -16,12 +16,6 @@ interface LightboxProps {
 export const Lightbox: React.FC<LightboxProps> = ({ item, initialType = 'main', onClose }) => {
   const [activeType, setActiveType] = useState<'main' | 'before' | 'after'>(initialType);
 
-  useEffect(() => {
-    if (item) {
-      setActiveType(initialType);
-    }
-  }, [item, initialType]);
-
   // Handle Escape key closure
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

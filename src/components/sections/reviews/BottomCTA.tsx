@@ -1,91 +1,84 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { ShieldAlert, CalendarClock, ShieldCheck, HeartPulse } from 'lucide-react';
+import { HandHeart, HeartPulse, Palette, Sparkles } from 'lucide-react';
 
-const benefits = [
+const pillars = [
   {
-    icon: <HeartPulse className="w-5 h-5 text-accent-soft" />,
-    title: 'Emergency 24/7',
-    desc: 'Round-the-clock priority clinic assistance.',
+    icon: <HandHeart className="w-5 h-5 text-[#b1f2be]" />,
+    label: 'SERVICE',
+    value: '100% Attentive',
   },
   {
-    icon: <CalendarClock className="w-5 h-5 text-primary-light" />,
-    title: 'Weekend Booking',
-    desc: 'Flexible Saturday clinical appointments.',
+    icon: <HeartPulse className="w-5 h-5 text-[#b1f2be]" />,
+    label: 'COMFORT',
+    value: 'Anxiety-Free',
   },
   {
-    icon: <ShieldCheck className="w-5 h-5 text-primary-light" />,
-    title: 'Advanced Care',
-    desc: 'Safe biological hygiene sterilization.',
+    icon: <Palette className="w-5 h-5 text-[#b1f2be]" />,
+    label: 'AESTHETIC',
+    value: "Artist's Touch",
   },
   {
-    icon: <ShieldAlert className="w-5 h-5 text-accent-soft" />,
-    title: 'Expert Doctors',
-    desc: 'Certified cosmetic surgical specialists.',
+    icon: <Sparkles className="w-5 h-5 text-[#b1f2be]" />,
+    label: 'RESULTS',
+    value: 'Clinical Precision',
   },
 ];
 
-export const BottomCTA: React.FC = () => {
-  return (
-    <section className="py-16 md:py-24 bg-bg overflow-hidden font-sans text-left">
-      <div className="max-w-[1200px] mx-auto px-4 md:px-8">
-        {/* Dark Teal Background card */}
-        <div className="bg-[#005030] text-white rounded-[40px] p-8 md:p-12 lg:p-16 relative overflow-hidden shadow-2xl border border-[#004020] grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          {/* Blurred decorative radial gradient */}
-          <div className="absolute bottom-[-100px] left-[-100px] w-80 h-80 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
-          <div className="absolute top-[-100px] right-[-100px] w-80 h-80 rounded-full bg-primary-light/10 blur-3xl pointer-events-none" />
+interface BottomCTAProps {
+  onOpenModal: () => void;
+}
 
-          {/* Left Column: Heading and buttons */}
-          <div className="lg:col-span-6 flex flex-col">
-            <span className="text-[10px] font-bold text-accent-soft uppercase tracking-widest block mb-3">
-              Start Your Journey
-            </span>
-            <h2 className="font-serif font-bold text-3xl md:text-4xl text-white mb-4 leading-tight">
-              Ready for Your Own Smile Makeover?
+export const BottomCTA: React.FC<BottomCTAProps> = ({ onOpenModal }) => {
+  return (
+    <section className="py-14 md:py-18 bg-bg overflow-hidden font-sans">
+      <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+        <div className="bg-[#003b1b] text-white rounded-3xl p-8 md:p-10 flex flex-col lg:flex-row gap-8 items-center">
+          {/* Left: copy + buttons */}
+          <div className="w-full lg:w-[45%] flex flex-col text-left">
+            <h2 className="font-serif font-bold text-3xl md:text-4xl text-white leading-tight">
+              Share Your Story
             </h2>
-            <p className="text-xs md:text-sm text-slate-300 leading-relaxed font-normal mb-8 max-w-md">
-              Schedule a private assessment to review your cosmetic goals. Our specialists are here to design a personalized treatment blueprint for you.
+            <p className="text-sm text-white/70 leading-relaxed mt-3 max-w-md">
+              Your feedback helps us maintain our boutique standards and helps others choose their
+              dental home with confidence.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4">
-              <Link
-                href="/book-appointment"
-                className="inline-flex items-center justify-center font-bold transition-all duration-300 rounded-full text-xs px-8 py-3.5 bg-accent text-white hover:bg-accent-hover btn-diagonal-stripe shadow-md cursor-pointer"
+            <div className="flex flex-wrap items-center gap-4 mt-8">
+              <button
+                onClick={onOpenModal}
+                className="px-6 py-3 rounded-full bg-emerald-200 text-[#003b1b] font-bold text-xs transition-colors hover:bg-emerald-100 cursor-pointer"
               >
-                Book Now
-              </Link>
+                Write a Review
+              </button>
               <Link
-                href="/services"
-                className="inline-flex items-center justify-center font-bold transition-all duration-300 rounded-full text-xs px-8 py-3.5 border-2 border-white/20 text-white hover:bg-white hover:text-primary cursor-pointer"
+                href="/gallery"
+                className="px-6 py-3 rounded-full border border-white/30 text-white font-bold text-xs transition-colors hover:bg-white/10 cursor-pointer"
               >
-                Our Services
+                View Gallery
               </Link>
             </div>
           </div>
 
-          {/* Right Column: 2x2 glass benefits card grid */}
-          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full h-full">
-            {benefits.map((b, idx) => (
+          {/* Right: 2x2 glass feature cards */}
+          <div className="w-full lg:w-[55%] grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {pillars.map((p) => (
               <div
-                key={idx}
-                className="p-5 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex flex-col justify-between items-start text-left shadow-sm hover:bg-white/10 hover:border-white/20 transition-all duration-300 select-none"
+                key={p.label}
+                className="p-5 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex flex-col items-start text-left transition-colors hover:bg-white/10"
               >
                 <div className="p-2.5 rounded-xl bg-white/10 mb-4 flex items-center justify-center shadow-inner">
-                  {b.icon}
+                  {p.icon}
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-[#7AC943] mb-1">
-                    {b.title}
-                  </h3>
-                  <p className="text-[10px] text-slate-300 leading-relaxed font-normal font-sans">
-                    {b.desc}
-                  </p>
-                </div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#b1f2be]">
+                  {p.label}
+                </span>
+                <span className="text-sm font-bold text-white mt-1">{p.value}</span>
               </div>
             ))}
           </div>
-
         </div>
       </div>
     </section>

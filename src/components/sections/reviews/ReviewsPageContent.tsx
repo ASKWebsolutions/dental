@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import ReviewsHero from './ReviewsHero';
 import StatsBar from './StatsBar';
+import SpotlightTestimonial from './SpotlightTestimonial';
 import StoriesGrid from './StoriesGrid';
 import BottomCTA from './BottomCTA';
+import TrustLogos from './TrustLogos';
 import ReviewSubmitModal from './ReviewSubmitModal';
 import { Review, SiteStat } from '@/types/reviews';
 
@@ -16,13 +18,18 @@ interface ReviewsPageContentProps {
 export const ReviewsPageContent: React.FC<ReviewsPageContentProps> = ({ initialReviews, stats }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   return (
     <>
-      <ReviewsHero onOpenModal={() => setIsModalOpen(true)} />
+      <ReviewsHero />
       <StatsBar stats={stats} />
-      <StoriesGrid initialReviews={initialReviews} onOpenModal={() => setIsModalOpen(true)} />
-      <BottomCTA />
-      <ReviewSubmitModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <SpotlightTestimonial />
+      <StoriesGrid initialReviews={initialReviews} />
+      <BottomCTA onOpenModal={openModal} />
+      <TrustLogos />
+      <ReviewSubmitModal isOpen={isModalOpen} onClose={closeModal} />
     </>
   );
 };

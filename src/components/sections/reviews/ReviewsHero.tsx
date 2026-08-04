@@ -1,84 +1,99 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Star } from 'lucide-react';
 import Container from '@/components/ui/Container';
-import SectionHeading from '@/components/ui/SectionHeading';
-import { Star, ShieldCheck } from 'lucide-react';
 
-interface ReviewsHeroProps {
-  onOpenModal: () => void;
-}
+const avatars = [
+  { initials: 'EV', bg: 'bg-[#003b1b]' },
+  { initials: 'JM', bg: 'bg-accent' },
+  { initials: 'SM', bg: 'bg-amber-400' },
+];
 
-export const ReviewsHero: React.FC<ReviewsHeroProps> = ({ onOpenModal }) => {
+export const ReviewsHero: React.FC = () => {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <section className="relative pt-12 pb-16 md:pt-16 md:pb-24 bg-bg overflow-hidden flex flex-col items-center">
-      {/* Glow blobs */}
-      <div className="absolute top-[10%] left-[5%] w-24 h-24 rounded-full bg-primary/5 blur-2xl pointer-events-none" />
-      <div className="absolute bottom-[10%] right-[5%] w-32 h-32 rounded-full bg-accent/5 blur-3xl pointer-events-none" />
+    <section className="relative pt-16 pb-6 md:pt-24 md:pb-10 bg-bg overflow-hidden">
+      {/* Soft ambient glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-accent/5 blur-[120px] pointer-events-none -z-10" />
 
-      <Container className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
-        {/* Left info column */}
-        <div className="lg:col-span-7 flex flex-col">
-          <SectionHeading
-            eyebrow="Patient Satisfaction"
-            title="Your Smiles, Our Greatest Reward"
-            highlightedText="Greatest Reward"
-            highlightColor="teal-clean"
-            subtitle="Discover how our commitment to biological aesthetics, advanced technology, and patient-first care has transformed smiles and restored confidence."
-            align="left"
-            showDots={true}
-            className="mb-8"
-          />
-
-          {/* Action CTAs */}
-          <div className="flex flex-wrap items-center gap-4 mt-2">
-            <button
-              onClick={onOpenModal}
-              className="inline-flex items-center justify-center font-bold transition-all duration-300 rounded-full text-xs px-8 py-3.5 bg-accent text-white hover:bg-accent-hover btn-diagonal-stripe shadow-md cursor-pointer"
+      <Container className="max-w-5xl">
+        <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-10 justify-between">
+          {/* Left: heading copy */}
+          <div className="max-w-xl flex flex-col items-start text-left">
+            <motion.span
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              className="text-xs font-bold tracking-[0.25em] text-[#003b1b] uppercase block"
             >
-              Share Your Experience
-            </button>
-            <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-slate-200 bg-white/50 backdrop-blur-sm shadow-sm select-none font-sans">
-              <Star className="w-4 h-4 text-[#FFB020] fill-[#FFB020]" />
-              <Star className="w-4 h-4 text-[#FFB020] fill-[#FFB020]" />
-              <Star className="w-4 h-4 text-[#FFB020] fill-[#FFB020]" />
-              <Star className="w-4 h-4 text-[#FFB020] fill-[#FFB020]" />
-              <Star className="w-4 h-4 text-[#FFB020] fill-[#FFB020]" />
-              <span className="text-xs font-bold text-[#000000] ml-1">4.9/5 Rating</span>
-            </div>
-          </div>
-        </div>
+              Patient Perspectives
+            </motion.span>
 
-        {/* Right graphic column */}
-        <div className="lg:col-span-5 relative w-full h-[320px] md:h-[400px] rounded-[32px] overflow-hidden shadow-card border border-slate-100/50 bg-slate-100 group">
-          <Image
-            src="/images/home/hero-dentist.png"
-            alt="Happy patient transformation smile"
-            fill
-            sizes="(max-width: 1024px) 100vw, 450px"
-            className="object-cover group-hover:scale-102 transition-transform duration-750"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+            <motion.h1
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.08, ease: 'easeOut' }}
+              className="font-serif text-3xl sm:text-4xl text-gray-900 mt-2 mb-1 leading-tight"
+            >
+              Real Smiles,
+            </motion.h1>
+            <motion.h2
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.14, ease: 'easeOut' }}
+              className="font-serif text-3xl sm:text-4xl text-gray-900 italic mb-4 leading-tight"
+            >
+              Lasting Impressions.
+            </motion.h2>
 
-          {/* Floating Glass testimonial Card overlay */}
-          <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-white/85 backdrop-blur-md shadow-lg border border-white/40 flex items-start gap-3 select-none animate-fade-in font-sans">
-            <div className="p-2 rounded-xl bg-primary-light text-primary flex-shrink-0">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">
-                Verified Smile Makeover
-              </p>
-              <p className="text-xs italic text-slate-700 font-medium leading-relaxed mt-1">
-                "The custom veneers changed my life. I haven't stopped smiling since my appointment."
-              </p>
-              <p className="text-[10px] font-bold text-slate-900 mt-1">
-                — Sarah J., Cosmetic Patient
-              </p>
-            </div>
+            <motion.p
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+              className="text-xs text-gray-500 max-w-xl font-sans leading-relaxed"
+            >
+              Our commitment to precision and aesthetics is reflected in the lives we touch.
+              Explore the experiences of our dental family, from transformative smile makeovers
+              to life-changing dental implants.
+            </motion.p>
           </div>
+
+          {/* Right: Google rating badge */}
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.28, ease: 'easeOut' }}
+            className="flex items-center gap-4 bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 flex-shrink-0"
+          >
+            {/* Stacked avatar thumbnails */}
+            <div className="flex -space-x-2.5">
+              {avatars.map((a) => (
+                <div
+                  key={a.initials}
+                  className={`w-10 h-10 rounded-full ${a.bg} text-white flex items-center justify-center text-xs font-bold ring-2 ring-white flex-shrink-0`}
+                >
+                  {a.initials}
+                </div>
+              ))}
+            </div>
+
+            {/* Rating text */}
+            <div className="flex flex-col">
+              <div className="flex items-center gap-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="w-3.5 h-3.5 text-[#FFB020] fill-[#FFB020]" />
+                ))}
+                <span className="text-sm font-bold text-gray-900 ml-1.5">4.9/5</span>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">
+                Google Rating
+              </span>
+            </div>
+          </motion.div>
         </div>
       </Container>
     </section>

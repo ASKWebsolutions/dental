@@ -36,6 +36,7 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({ initialItems }) => {
   const [activeCategory, setActiveCategory] = useState<FilterCategory>(ALL_LABEL);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
   const [lightboxType, setLightboxType] = useState<'main' | 'before' | 'after'>('main');
+  const [lightboxSession, setLightboxSession] = useState(0);
 
   // Featured before/after case for the hero slider
   const featured =
@@ -58,6 +59,7 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({ initialItems }) => {
   const handleOpenLightbox = (item: GalleryItem, type?: 'main' | 'before' | 'after') => {
     setSelectedItem(item);
     setLightboxType(type || 'main');
+    setLightboxSession((s) => s + 1);
   };
 
   return (
@@ -70,6 +72,8 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({ initialItems }) => {
               beforeImage={featured.images.before}
               afterImage={featured.images.after}
               title={featured.title}
+              beforeLabel={`Before ${featured.category}`}
+              afterLabel={`After ${featured.category}`}
             />
           </div>
         )}
@@ -124,6 +128,7 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({ initialItems }) => {
 
       {/* Full screen Lightbox */}
       <Lightbox
+        key={`${selectedItem?.id || 'none'}-${lightboxSession}`}
         item={selectedItem}
         initialType={lightboxType}
         onClose={() => setSelectedItem(null)}

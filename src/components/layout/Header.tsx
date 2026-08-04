@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, Phone } from 'lucide-react';
+import { Menu, Phone, Calendar } from 'lucide-react';
 import { navLinks } from '@/data/navLinks';
 import { siteConfig } from '@/data/siteConfig';
 import Logo from '../ui/Logo';
@@ -37,32 +37,54 @@ export const Header: React.FC<{ settings?: any }> = ({ settings }) => {
         className={cn(
           'sticky top-0 left-0 right-0 z-40 transition-all duration-300 w-full border-b',
           isScrolled
-            ? 'bg-bg/95 backdrop-blur-md shadow-sm py-3 border-primary/20'
-            : 'bg-bg/90 backdrop-blur-md py-4 border-slate-100/60'
+            ? 'bg-[#f8f7f3]/95 backdrop-blur-md shadow-sm border-[#003b1b]/10'
+            : 'bg-[#f8f7f3]/90 backdrop-blur-md border-gray-200/50'
         )}
       >
-        <Container className="flex items-center justify-between">
+        <Container className={cn(
+          "flex items-center justify-between transition-all duration-300",
+          isScrolled ? "h-16" : "h-20"
+        )}>
           {/* Logo - Client-provided image logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <Logo className="group-hover:scale-105 transition-transform duration-300" />
+            <Logo className={cn(
+              "group-hover:scale-105 transition-all duration-300",
+              isScrolled ? "h-8 sm:h-9 lg:h-10" : "h-9 sm:h-11 lg:h-12"
+            )} />
           </Link>
 
-          {/* Desktop Navigation - Manrope 14px bold, uppercase, tracking */}
-          <nav className="hidden lg:flex items-center gap-4 xl:gap-6 shrink-0">
+          {/* Navigation Links with Half-Teeth Active Indicator */}
+          <nav className="hidden lg:flex items-stretch gap-8 relative shrink-0 h-full">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href));
               return (
                 <Link
-                  key={link.href}
+                  key={link.label}
                   href={link.href}
                   className={cn(
-                    'font-sans font-bold text-[13px] tracking-wider uppercase transition-colors py-2 relative whitespace-nowrap',
-                    isActive ? 'text-primary' : 'text-body-text hover:text-primary'
+                    'relative flex items-center text-xs sm:text-sm tracking-wide transition-colors font-sans h-full',
+                    isActive
+                      ? 'text-[#003b1b] font-bold'
+                      : 'text-gray-600 hover:text-[#003b1b] font-medium'
                   )}
                 >
                   {link.label}
+
+                  {/* Half-Teeth Icon Crest beneath active page */}
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-full animate-fade-in" />
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-10 -mt-[1px]">
+                      <svg
+                        width="20"
+                        height="10"
+                        viewBox="0 0 24 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-[#003b1b] fill-current"
+                      >
+                        {/* Curved Top Half-Teeth Crest Shape */}
+                        <path d="M2 0C2 4.41828 5.58172 8 10 8C11.5 8 12.5 8 14 8C18.4183 8 22 4.41828 22 0H2Z" />
+                      </svg>
+                    </div>
                   )}
                 </Link>
               );
@@ -71,36 +93,37 @@ export const Header: React.FC<{ settings?: any }> = ({ settings }) => {
 
           {/* Action Area */}
           <div className="flex items-center gap-2 lg:border-l lg:border-slate-200/80 lg:pl-5 xl:pl-6">
-            {/* Call Icon-only button */}
+            {/* Direct Phone Call */}
             <a
-              href={`tel:${(settings?.phone || siteConfig.contact.phone).replace(/\s+/g, '')}`}
-              className="hidden sm:inline-flex items-center justify-center p-2 rounded-xl text-body-text hover:text-primary hover:bg-slate-50 transition-colors shrink-0"
-              title={`Call us: ${settings?.phone || siteConfig.contact.phone}`}
-              aria-label={`Call us at ${settings?.phone || siteConfig.contact.phone}`}
+              href={`tel:${(settings?.phone || '+923245021261').replace(/\s+/g, '')}`}
+              className="hidden sm:inline-flex items-center justify-center p-2 rounded-xl text-[#003b1b] hover:bg-emerald-100/50 transition-colors shrink-0"
+              title={`Call us: ${settings?.phone || '+923245021261'}`}
+              aria-label="Call Us"
             >
-              <Phone className="w-4 h-4 text-primary shrink-0" />
+              <Phone className="w-4 h-4 text-[#003b1b] shrink-0" />
             </a>
 
-            {/* WhatsApp Icon-only button */}
-            {settings?.whatsapp && (
-              <a
-                href={`https://wa.me/${settings.whatsapp.replace(/\D/g, '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden sm:inline-flex items-center justify-center p-2 rounded-xl text-body-text hover:text-primary hover:bg-slate-50 transition-colors shrink-0 hover:scale-110 transition-transform"
-                title={`WhatsApp us: ${settings.whatsapp}`}
-                aria-label={`Message us on WhatsApp at ${settings.whatsapp}`}
-              >
-                <WhatsAppIcon className="w-4 h-4 fill-green-500 hover:fill-green-600 transition-colors" />
-              </a>
-            )}
+            {/* WhatsApp Quick Link */}
+            <a
+              href={settings?.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/\D/g, '')}` : 'https://wa.me/923245021261'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center justify-center p-2 rounded-xl text-emerald-600 hover:bg-emerald-100/50 transition-colors shrink-0 hover:scale-110"
+              title={`WhatsApp us: ${settings?.whatsapp || '923245021261'}`}
+              aria-label="WhatsApp"
+            >
+              <svg className="w-5 h-5 fill-current shrink-0 text-emerald-600" viewBox="0 0 24 24">
+                <path d="M12.031 2c-5.514 0-9.999 4.486-9.999 10 0 1.763.462 3.487 1.34 5.02L2 22l5.081-1.332c1.488.814 3.164 1.252 4.95 1.252 5.514 0 10-4.486 10-10s-4.486-10-10.000-10zm5.836 14.168c-.244.688-1.22 1.322-1.996 1.487-.532.113-1.228.204-3.565-.764-2.986-1.238-4.908-4.275-5.057-4.474-.149-.2-1.213-1.616-1.213-3.082 0-1.467.768-2.189 1.042-2.485.274-.296.598-.37.797-.37.198 0 .397.002.571.011.185.009.432-.07.676.516.244.587.834 2.036.908 2.185.074.149.123.323.025.517-.099.195-.148.318-.296.492-.148.174-.312.389-.446.523-.148.149-.302.311-.13.608.172.296.764 1.262 1.638 2.042 1.124.999 2.072 1.31 2.37 1.458.297.148.47.123.643-.074.173-.198.742-.865.94-1.163.198-.297.396-.247.668-.148.272.099 1.733.818 2.031.966.297.149.495.223.569.347.074.124.074.718-.17 1.406z" />
+              </svg>
+            </a>
 
-            {/* Book Appointment CTA */}
+            {/* Primary Book Appointment CTA Button */}
             <Link
               href="/book-appointment"
-              className="hidden md:inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-xs px-4 py-2 bg-accent text-white hover:bg-accent-hover btn-diagonal-stripe shadow-md cursor-pointer whitespace-nowrap shrink-0"
+              className="hidden md:inline-flex items-center justify-center font-bold text-xs px-5 py-2.5 bg-[#003b1b] text-white hover:bg-[#002b13] transition-colors rounded-full shadow-sm gap-2 whitespace-nowrap shrink-0 cursor-pointer"
             >
-              Book Appointment
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Book Appointment</span>
             </Link>
 
             {/* Mobile Menu Toggle */}

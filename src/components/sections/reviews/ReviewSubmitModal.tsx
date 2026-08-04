@@ -66,8 +66,12 @@ export const ReviewSubmitModal: React.FC<ReviewSubmitModalProps> = ({ isOpen, on
       setTitle('');
       setBody('');
       setIsVerifiedPatient(true);
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to submit review. Please try again.');
+    } catch (err: unknown) {
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : 'Failed to submit review. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
