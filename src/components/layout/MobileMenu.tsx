@@ -97,14 +97,14 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, 
                       <Link
                         href={link.href}
                         onClick={onClose}
-                        className={`relative flex flex-col items-center justify-center py-2.5 text-lg font-bold transition-all duration-200 ${
-                          isActive ? 'text-[#003b1b]' : 'text-slate-800 hover:text-[#003b1b]'
+                        className={`relative flex flex-col items-center justify-center py-2 text-base font-semibold tracking-wide font-sans transition-all duration-200 ${
+                          isActive ? 'text-[#003b1b]' : 'text-slate-600 hover:text-[#003b1b]'
                         }`}
                       >
                         <span className="relative z-10">{link.label}</span>
                         {isActive && (
                           <motion.span
-                            layoutId="activeMobileIndicator"
+                            layoutId="activeMobileDrawerIndicator"
                             className="mt-0.5 text-[#003b1b] flex items-center justify-center shrink-0"
                             transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                           >
@@ -132,7 +132,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, 
                   Contact Information
                 </h4>
 
-                <div className="flex flex-col gap-4 text-sm text-slate-600">
+                <div className="flex flex-col gap-4 text-sm text-slate-600 text-left">
+                  {/* Landline Phone */}
                   <a
                     href={`tel:${(settings?.phone || siteConfig.contact.phone).replace(/\s+/g, '')}`}
                     className="flex items-center gap-3 hover:text-primary transition-colors"
@@ -140,25 +141,27 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, 
                     <Phone className="w-4 h-4 text-primary" />
                     <span>{settings?.phone || siteConfig.contact.phone}</span>
                   </a>
-                  {settings?.whatsapp && (
-                    <div className="flex items-center justify-between">
-                      <a
-                        href={`tel:${settings.whatsapp.replace(/\D/g, '')}`}
-                        className="flex items-center gap-3 hover:text-primary transition-colors"
-                      >
-                        <Phone className="w-4 h-4 text-primary" />
-                        <span>{settings.whatsapp}</span>
-                      </a>
-                      <a
-                        href={`https://wa.me/${settings.whatsapp.replace(/\D/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-xs font-bold text-green-600 hover:text-green-700 transition-colors"
-                      >
-                        <WhatsAppIcon className="w-4 h-4 fill-green-500" /> WhatsApp
-                      </a>
-                    </div>
-                  )}
+
+                  {/* Mobile Phone Call */}
+                  <a
+                    href={`tel:${(settings?.whatsapp || '03245021261').replace(/\D/g, '')}`}
+                    className="flex items-center gap-3 hover:text-primary transition-colors"
+                  >
+                    <Phone className="w-4 h-4 text-primary" />
+                    <span>{settings?.whatsapp || '03245021261'}</span>
+                  </a>
+
+                  {/* WhatsApp Chat Link */}
+                  <a
+                    href={`https://wa.me/${(settings?.whatsapp || '923245021261').replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 hover:text-green-600 transition-colors text-green-600 font-bold"
+                  >
+                    <WhatsAppIcon className="w-4 h-4 fill-green-500 text-green-500" />
+                    <span>Chat on WhatsApp</span>
+                  </a>
+
                   <a
                     href={`mailto:${settings?.email || siteConfig.contact.email}`}
                     className="flex items-center gap-3 hover:text-primary transition-colors"
@@ -179,7 +182,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, 
               <Link
                 href="/book-appointment"
                 onClick={onClose}
-                className="w-full inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-sm px-6 py-3 bg-accent text-white hover:bg-accent-hover btn-diagonal-stripe shadow-md cursor-pointer text-center"
+                className="w-full inline-flex items-center justify-center font-bold tracking-wide transition-all duration-300 rounded-full text-xs px-6 py-3 bg-[#003b1b] text-white hover:bg-[#002b13] btn-diagonal-stripe shadow-md cursor-pointer text-center"
               >
                 Book Appointment
               </Link>
