@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Bell, User, LogOut, Settings as SettingsIcon, MessageSquare, Calendar, FileText, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 export default function GlobalAdminHeader() {
   const router = useRouter();
@@ -15,6 +16,8 @@ export default function GlobalAdminHeader() {
   });
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isUserOpen, setIsUserOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
@@ -55,14 +58,21 @@ export default function GlobalAdminHeader() {
     notifications.pendingReviews;
 
   const handleLogout = async () => {
-    await fetch('/api/admin/logout', { method: 'POST' });
-    router.push('/admin/login');
-    router.refresh();
+    setIsLoggingOut(true);
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+      router.push('/admin/login');
+      router.refresh();
+    } catch (e) {
+      console.error('Logout error:', e);
+      setIsLoggingOut(false);
+      setShowLogoutConfirm(false);
+    }
   };
 
   return (
-    <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-end px-6 shrink-0 relative z-40">
-      <div className="flex items-center gap-4">
+    <header className="bg-white border-b border-slate-200 h-14 md:h-16 flex items-center justify-end px-4 md:px-6 shrink-0 relative z-30">
+      <div className="flex items-center gap-3 md:gap-4">
         
         {/* Notifications Dropdown */}
         <div className="relative" ref={notifRef}>
@@ -165,7 +175,10 @@ export default function GlobalAdminHeader() {
                 Account Settings
               </Link>
               <button
-                onClick={handleLogout}
+                onClick={() => {
+                  setIsUserOpen(false);
+                  setShowLogoutConfirm(true);
+                }}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
               >
                 <LogOut className="w-4 h-4 text-red-400" />
@@ -176,6 +189,19 @@ export default function GlobalAdminHeader() {
         </div>
         
       </div>
+
+      {/* Sign Out Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Sign Out"
+        description="Are you sure you want to sign out of the clinic administration panel?"
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isLoggingOut}
+      />
     </header>
   );
 }

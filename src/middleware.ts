@@ -7,8 +7,8 @@ const COOKIE_NAME = 'admin-session';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow login page and API login route to pass through
-  if (pathname === '/admin/login' || pathname === '/api/admin/login') {
+  // Allow login page, API login route, and API logout route to pass through
+  if (pathname === '/admin/login' || pathname === '/api/admin/login' || pathname === '/api/admin/logout') {
     return NextResponse.next();
   }
 

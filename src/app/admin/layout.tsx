@@ -7,8 +7,9 @@ import { Image as ImageIcon, Calendar, Sparkles, Users, MessageSquare, LogOut, F
 import Logo from '@/components/ui/Logo';
 import { cn } from '@/lib/utils';
 import GlobalAdminHeader from '@/components/layout/admin/GlobalAdminHeader';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
-function AdminSidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
+function AdminSidebarNav({ isCollapsed, onNavigate }: { isCollapsed: boolean; onNavigate?: () => void }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab');
@@ -45,6 +46,7 @@ function AdminSidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
           <Link
             key={item.label}
             href={item.href}
+            onClick={() => onNavigate?.()}
             title={isCollapsed ? item.label : undefined}
             className={cn(
               'flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all',
@@ -68,6 +70,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const isLoginPage = pathname === '/admin/login';
 
   useEffect(() => {
@@ -88,6 +92,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
   }, [isLoginPage]);
 
+  // Automatically close mobile sidebar on route / path changes
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
+
   const toggleCollapse = () => {
     const newVal = !isCollapsed;
     setIsCollapsed(newVal);
@@ -95,9 +104,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   const handleLogout = async () => {
-    await fetch('/api/admin/logout', { method: 'POST' });
-    router.push('/admin/login');
-    router.refresh();
+    setIsLoggingOut(true);
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+      router.push('/admin/login');
+      router.refresh();
+    } catch (e) {
+      console.error('Logout error:', e);
+      setIsLoggingOut(false);
+      setShowLogoutConfirm(false);
+    }
   };
 
   if (isLoginPage) {
@@ -107,16 +123,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex flex-col lg:flex-row h-screen w-full bg-slate-100 font-sans text-slate-800 overflow-hidden">
       {/* Mobile Top Navbar */}
-      <div className="lg:hidden flex items-center justify-between p-4 bg-[#2E2E2E] text-[#A0A0A0] border-b border-[#222222] select-none shrink-0">
-        <Link href="/" className="flex items-center gap-2">
-          <Logo variant="dark" className="h-6 w-auto" />
+      <div className="lg:hidden flex items-center justify-between px-4 h-14 bg-[#2E2E2E] text-[#A0A0A0] border-b border-[#222222] select-none shrink-0 z-30">
+        <Link href="/" className="flex items-center">
+          <Logo variant="dark" className="!h-7 !w-auto !aspect-[2.55/1]" />
         </Link>
         <button
+          type="button"
           onClick={() => setIsMobileOpen(true)}
-          className="p-2 rounded-lg hover:bg-[#3A3A3A] text-[#A0A0A0] hover:text-white cursor-pointer"
-          aria-label="Open sidebar"
+          className="p-2 rounded-lg text-[#A0A0A0] hover:text-white hover:bg-[#3A3A3A] active:bg-[#444444] transition-colors cursor-pointer flex items-center justify-center"
+          aria-label="Open sidebar menu"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-6 h-6 shrink-0" />
         </button>
       </div>
 
@@ -143,9 +160,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-6 border-b border-[#222222] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3 overflow-hidden">
             {!isCollapsed ? (
-              <Logo variant="dark" className="h-7 w-auto" />
+              <Logo variant="dark" className="!h-7 !w-auto" />
             ) : (
-              <Logo variant="icon" className="h-6 w-6" />
+              <Logo variant="icon" className="!h-6 !w-6" />
             )}
           </div>
           
@@ -169,14 +186,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Tab Links */}
-          <Suspense fallback={<div className="p-4 text-xs text-[#A0A0A0]">Loading nav...</div>}>
-          <AdminSidebarNav isCollapsed={isCollapsed} />
+        <Suspense fallback={<div className="p-4 text-xs text-[#A0A0A0]">Loading nav...</div>}>
+          <AdminSidebarNav isCollapsed={isCollapsed} onNavigate={() => setIsMobileOpen(false)} />
         </Suspense>
 
         {/* Footer Log Out */}
         <div className="p-4 border-t border-[#222222] shrink-0">
           <button
-            onClick={handleLogout}
+            onClick={() => setShowLogoutConfirm(true)}
             title={isCollapsed ? 'Sign Out' : undefined}
             className={cn(
               'flex items-center gap-3 w-full px-4 py-3 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer',
@@ -190,10 +207,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Panel View Area */}
-      <main className="flex-1 flex flex-col overflow-hidden bg-slate-50 relative">
+      <main className="flex-1 flex flex-col min-h-0 bg-slate-50 relative overflow-hidden">
         <GlobalAdminHeader />
-        {children}
+        <div className="flex-1 overflow-y-auto flex flex-col min-h-0">
+          {children}
+        </div>
       </main>
+
+      {/* Sign Out Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Sign Out"
+        description="Are you sure you want to sign out of the clinic administration panel?"
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isLoggingOut}
+      />
     </div>
   );
 }

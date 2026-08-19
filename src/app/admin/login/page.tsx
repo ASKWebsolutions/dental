@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 
 export default function AdminLoginPage() {
@@ -31,9 +32,9 @@ export default function AdminLoginPage() {
 
       router.push('/admin');
       router.refresh();
+      // Keep loading = true while router navigates to avoid button flickering back to 'Sign In'
     } catch (err: any) {
       setError(err.message || 'Invalid credentials');
-    } finally {
       setLoading(false);
     }
   };
@@ -100,9 +101,16 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-4 inline-flex items-center justify-center font-semibold transition-all duration-300 rounded-full text-sm px-8 py-3.5 bg-accent text-white hover:bg-accent-hover shadow-md disabled:bg-slate-300 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full mt-4 inline-flex items-center justify-center gap-2 font-semibold transition-all duration-300 rounded-full text-sm px-8 py-3.5 bg-accent text-white hover:bg-accent-hover shadow-md disabled:bg-accent/70 disabled:cursor-not-allowed cursor-pointer"
           >
-            {loading ? 'Authenticating...' : 'Sign In'}
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                <span>Signing In...</span>
+              </>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
       </div>
