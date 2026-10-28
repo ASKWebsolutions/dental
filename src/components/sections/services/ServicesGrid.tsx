@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
-import { motion, Variants } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { Plus } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import { ServiceCard } from './ServiceCard';
+import { ServiceModal } from './ServiceModal';
 import { Service } from '@/types';
 
 interface ServicesGridProps {
@@ -12,27 +13,34 @@ interface ServicesGridProps {
   searchQuery?: string;
 }
 
-export const ServicesGrid: React.FC<ServicesGridProps> = ({ services, onReset, searchQuery }) => {
+const INITIAL_VISIBLE = 6;
+const LOAD_MORE_COUNT = 6;
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.08 },
-    },
-  };
+export const ServicesGrid: React.FC<ServicesGridProps> = ({ services, onReset }) => {
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
-  const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 24 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.45, ease: 'easeOut' as const },
-    },
-  };
+  /* After loading a new batch, bring the first newly added card into view
+     so the user immediately sees the services that just loaded. */
+  useEffect(() => {
+    if (visibleCount <= INITIAL_VISIBLE) return;
+    const firstNewIndex = visibleCount - LOAD_MORE_COUNT;
+    const card = sectionRef.current?.querySelectorAll<HTMLElement>(
+      '#services-list article'
+    )[firstNewIndex];
+    if (!card) return;
+    const prefersReduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    card.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'nearest' });
+  }, [visibleCount]);
+
+  const visibleServices = services.slice(0, visibleCount);
+  const hasMore = services.length > visibleCount;
 
   return (
-    <section id="services-list" className="py-20 md:py-24 bg-bg-alt overflow-hidden">
+    <section ref={sectionRef} id="services-list" className="py-20 md:py-24 bg-bg-alt overflow-hidden">
       <Container>
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-16 w-full">
@@ -61,20 +69,42 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ services, onReset, s
             )}
           </div>
         ) : (
-          <motion.div
-            key={searchQuery || 'all'}
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full"
-          >
-            {services.map((service) => (
-              <ServiceCard key={service.id || service.title} service={service} variants={cardVariants} />
-            ))}
-          </motion.div>
+          <>
+            {/* Plain grid: every card self-animates via its own whileInView,
+                so cards appended by Load More are never left invisible. */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+              {visibleServices.map((service, index) => (
+                <ServiceCard
+                  key={service.id || service.title}
+                  service={service}
+                  index={index}
+                  onViewMore={setSelectedService}
+                />
+              ))}
+            </div>
+
+            {/* Load More */}
+            {hasMore && (
+              <div className="mt-12 flex flex-col items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((count) => count + LOAD_MORE_COUNT)}
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-xs font-bold tracking-wide text-white transition-colors hover:bg-primary-hover shadow-md cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Load More Services</span>
+                </button>
+                <p className="text-xs text-body-text font-sans">
+                  Showing {visibleServices.length} of {services.length} treatments
+                </p>
+              </div>
+            )}
+          </>
         )}
       </Container>
+
+      {/* Service Detail Modal */}
+      <ServiceModal service={selectedService} onClose={() => setSelectedService(null)} />
     </section>
   );
 };

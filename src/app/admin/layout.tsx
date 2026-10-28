@@ -3,7 +3,7 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Image as ImageIcon, Calendar, Sparkles, Users, MessageSquare, LogOut, FileText, Settings as SettingsIcon, BarChart as BarChartIcon, LayoutDashboard, ChevronLeft, ChevronRight, Menu, X, User } from 'lucide-react';
+import { Image as ImageIcon, Calendar, Sparkles, Users, MessageSquare, LogOut, FileText, Settings as SettingsIcon, BarChart as BarChartIcon, LayoutDashboard, ChevronLeft, ChevronRight, Menu, X, User, Newspaper } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { cn } from '@/lib/utils';
 import GlobalAdminHeader from '@/components/layout/admin/GlobalAdminHeader';
@@ -20,6 +20,7 @@ function AdminSidebarNav({ isCollapsed, onNavigate }: { isCollapsed: boolean; on
     { label: 'Submissions', href: '/admin/submissions', path: '/admin/submissions', icon: FileText },
     { label: 'Reviews', href: '/admin/reviews', path: '/admin/reviews', icon: MessageSquare },
     { label: 'Gallery', href: '/admin/gallery', path: '/admin/gallery', icon: ImageIcon },
+    { label: 'Blogs', href: '/admin/blogs', path: '/admin/blogs', icon: Newspaper },
     { label: 'Services', href: '/admin?tab=services', path: '/admin?tab=services', icon: Sparkles },
     { label: 'Doctors', href: '/admin?tab=doctors', path: '/admin?tab=doctors', icon: Users },
     { label: 'Stats', href: '/admin/settings/stats', path: '/admin/settings/stats', icon: BarChartIcon },

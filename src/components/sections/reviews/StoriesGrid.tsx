@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, ShieldCheck, AlertCircle, Loader, ChevronDown } from 'lucide-react';
+import { Star, ShieldCheck, AlertCircle, Loader, ChevronDown, Quote } from 'lucide-react';
 import { Review } from '@/types/reviews';
 
 interface StoriesGridProps {
@@ -22,7 +22,7 @@ const FILTERS: FilterOption[] = [
 ];
 
 const avatarPalette = [
-  'bg-[#003b1b]',
+  'bg-primary',
   'bg-accent',
   'bg-amber-500',
   'bg-emerald-600',
@@ -124,11 +124,15 @@ export const StoriesGrid: React.FC<StoriesGridProps> = ({ initialReviews }) => {
       <div className="max-w-[1200px] mx-auto px-4 md:px-8">
         {/* Heading + Filter Pills */}
         <header className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-end mb-12">
-          <div className="text-left max-w-lg">
-            <h2 className="font-serif text-3xl md:text-4xl text-gray-900 leading-tight">
+          <div className="text-left max-w-xl">
+            <span className="text-[11px] font-bold tracking-[0.25em] text-primary uppercase block mb-3">
+              Patient Stories
+            </span>
+            <h2 className="font-serif text-3xl md:text-4xl text-dark leading-tight">
               All Patient Reviews
             </h2>
-            <p className="text-xs text-gray-500 mt-2">
+            <div className="w-12 h-1.5 bg-primary rounded-full mt-4" />
+            <p className="text-sm md:text-base text-body-text mt-4 leading-relaxed">
               Hear from our community about their treatment journeys.
             </p>
           </div>
@@ -165,40 +169,61 @@ export const StoriesGrid: React.FC<StoriesGridProps> = ({ initialReviews }) => {
                 key={rev.id}
                 variants={cardVariants}
                 layout
-                className="bg-stone-100/70 p-6 rounded-2xl flex flex-col justify-between text-left hover:-translate-y-1 hover:shadow-md transition-all duration-300"
+                className="group relative bg-white rounded-3xl p-6 md:p-7 shadow-card border border-slate-100/70 flex flex-col justify-between text-left hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 h-full overflow-hidden"
               >
-                <div className="flex flex-col gap-4">
+                {/* Hover top accent */}
+                <span
+                  aria-hidden="true"
+                  className="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-primary via-primary-soft to-transparent rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                />
+
+                {/* Quote watermark */}
+                <Quote
+                  aria-hidden="true"
+                  className="absolute top-14 right-5 w-12 h-12 text-primary/[0.06] rotate-180 pointer-events-none"
+                />
+
+                <div className="relative z-10 flex flex-col gap-3.5">
                   {/* Rating stars + Verified badge */}
                   <div className="flex justify-between items-center">
                     <div className="flex gap-1">{renderStars(rev.rating)}</div>
                     {rev.isVerifiedPatient && (
-                      <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-700 uppercase tracking-wider bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                      <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-700 uppercase tracking-wider bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
                         <ShieldCheck className="w-3 h-3" /> Verified
                       </span>
                     )}
                   </div>
 
+                  {/* Review title */}
+                  {rev.title && (
+                    <h3 className="relative font-serif font-bold text-base md:text-lg text-dark leading-snug">
+                      {rev.title}
+                    </h3>
+                  )}
+
                   {/* Review body */}
-                  <p className="text-sm text-slate-700 leading-relaxed line-clamp-5 whitespace-pre-line">
+                  <p className="relative text-[15px] text-body-text leading-relaxed line-clamp-5 whitespace-pre-line">
                     {rev.body}
                   </p>
                 </div>
 
                 {/* Patient row */}
-                <div className="flex items-center justify-between mt-6 border-t border-stone-200 pt-4">
-                  <div className="flex items-center gap-3">
+                <div className="relative z-10 flex items-center justify-between gap-3 mt-6 pt-5 border-t border-slate-100">
+                  <div className="flex items-center gap-3 min-w-0">
                     <div
-                      className={`w-10 h-10 rounded-full ${
+                      className={`w-11 h-11 rounded-full ${
                         avatarPalette[index % avatarPalette.length]
                       } text-white flex items-center justify-center font-bold text-sm flex-shrink-0`}
                     >
                       {rev.patientName.charAt(0).toUpperCase()}
                     </div>
-                    <span className="font-bold text-gray-900 text-sm">{rev.patientName}</span>
+                    <span className="font-bold text-dark text-sm leading-tight">
+                      {rev.patientName}
+                    </span>
                   </div>
 
                   {(rev.treatmentType || rev.category) && (
-                    <span className="px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[9px] font-bold uppercase tracking-wider text-slate-500 flex-shrink-0">
+                    <span className="px-3 py-1.5 rounded-full bg-primary/5 text-primary text-[10px] font-bold uppercase tracking-wider flex-shrink-0">
                       {rev.treatmentType || rev.category}
                     </span>
                   )}

@@ -1,57 +1,19 @@
 import { createElement, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, Variants, useReducedMotion } from 'framer-motion';
-import {
-  ArrowRight,
-  Sparkles,
-  Droplets,
-  Smile,
-  ShieldCheck,
-  Activity,
-  Scissors,
-  Anchor,
-  Layers,
-  Grid,
-  Crown,
-  Flame,
-  Scan,
-  Stethoscope,
-  type LucideIcon,
-} from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowRight, Eye } from 'lucide-react';
 import { Service } from '@/types';
 import { resolveImageUrl } from '@/lib/media';
+import { getServiceIcon } from '@/lib/serviceIcons';
 
 interface ServiceCardProps {
   service: Service;
-  variants?: Variants;
+  index?: number;
+  onViewMore?: (service: Service) => void;
 }
 
-const iconRules: { keywords: string[]; icon: LucideIcon }[] = [
-  { keywords: ['whitening'], icon: Sparkles },
-  { keywords: ['scaling', 'cleaning'], icon: Droplets },
-  { keywords: ['polish'], icon: Smile },
-  { keywords: ['fill'], icon: ShieldCheck },
-  { keywords: ['root canal', 'endodontic'], icon: Activity },
-  { keywords: ['extract'], icon: Scissors },
-  { keywords: ['implant'], icon: Anchor },
-  { keywords: ['denture'], icon: Layers },
-  { keywords: ['aligner', 'brace'], icon: Grid },
-  { keywords: ['crown', 'bridge', 'veneer'], icon: Crown },
-  { keywords: ['gum', 'periodont'], icon: Flame },
-  { keywords: ['x-ray', 'scan', 'digital'], icon: Scan },
-  { keywords: ['emergency'], icon: Stethoscope },
-];
-
-function getServiceIcon(title: string): LucideIcon {
-  const lower = title.toLowerCase();
-  const match = iconRules.find(({ keywords }) =>
-    keywords.some((keyword) => lower.includes(keyword))
-  );
-  return match?.icon ?? Smile;
-}
-
-export const ServiceCard: React.FC<ServiceCardProps> = ({ service, variants }) => {
+export const ServiceCard: React.FC<ServiceCardProps> = ({ service, index = 0, onViewMore }) => {
   const prefersReducedMotion = useReducedMotion();
   const defaultFallback = '/images/home/dental-tech.png';
   const title = service?.title || 'Dental Service';
@@ -62,66 +24,88 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, variants }) =
   );
 
   const features = (service?.bullets ?? []).filter((b) => typeof b === 'string' && b.trim());
+  const bookingUrl = `/book-appointment?service=${encodeURIComponent(
+    service?.slug || service?.id || ''
+  )}`;
+  const ServiceIcon = getServiceIcon(title);
+
+  /* Self-driven entrance: each card animates when IT enters the viewport,
+     so cards appended later (Load More) always end up visible — no reliance
+     on parent whileInView variant propagation. */
+  const motionProps = prefersReducedMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 24 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: '-40px' as const },
+        transition: {
+          duration: 0.45,
+          ease: 'easeOut' as const,
+          delay: (index % 3) * 0.08,
+        },
+      };
 
   return (
-    <motion.div
-      variants={variants}
-      initial={prefersReducedMotion ? false : undefined}
-      className="relative group rounded-3xl overflow-hidden aspect-[4/5] shadow-lg group-hover:shadow-2xl transition-all duration-300 shimmer-sheen"
+    <motion.article
+      {...motionProps}
+      className="group flex h-full flex-col overflow-hidden rounded-3xl bg-white shadow-card border border-slate-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
     >
-      {/* Prominent Service Image */}
-      <Image
-        src={imgSrc}
-        alt=""
-        fill
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-        className="object-cover group-hover:scale-105 transition-transform duration-500"
-        onError={() => setImgSrc(defaultFallback)}
-        unoptimized={typeof imgSrc === 'string' && imgSrc.startsWith('data:')}
-      />
-
-      {/* Dark Gradient Overlay for text contrast */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
-
-      {/* Top Category Icon Badge */}
-      <div className="absolute top-5 left-6 z-20">
-        <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-emerald-400">
-          {createElement(getServiceIcon(title), { className: 'w-5 h-5' })}
+      {/* Service Image */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-slate-100 shrink-0">
+        <Image
+          src={imgSrc}
+          alt={title}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={() => setImgSrc(defaultFallback)}
+          unoptimized={typeof imgSrc === 'string' && imgSrc.startsWith('data:')}
+        />
+        <div className="absolute top-4 left-4 w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md border border-white shadow-sm flex items-center justify-center text-primary">
+          {createElement(ServiceIcon, { className: 'w-5 h-5' })}
         </div>
       </div>
 
-      {/* Content Overlay - bottom-aligned */}
-      <div className="absolute inset-0 z-20 p-6 flex flex-col justify-end">
-        {/* Title & Description */}
-        <h3 className="font-serif text-xl font-bold text-white mb-2">{title}</h3>
-        <p className="font-sans text-xs text-gray-200 leading-relaxed line-clamp-2 mb-4">
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <h3 className="font-serif text-lg font-bold text-primary mb-2">{title}</h3>
+        <p className="font-sans text-sm text-body-text leading-relaxed line-clamp-3 mb-4">
           {shortDescription}
         </p>
 
-        {/* Key Features */}
         {features.length > 0 && (
-          <div className="space-y-1.5 mb-6">
-            {features.slice(0, 2).map((feature, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                <span className="text-xs text-gray-300">{feature}</span>
-              </div>
+          <div className="mb-5 flex flex-wrap gap-2">
+            {features.slice(0, 3).map((feature, idx) => (
+              <span
+                key={idx}
+                className="rounded-full bg-bg-alt border border-slate-100 px-3 py-1 text-[11px] font-semibold text-primary"
+              >
+                {feature}
+              </span>
             ))}
           </div>
         )}
 
-        {/* Bottom "Book Now" Button Bar */}
-        <Link
-          href={`/book-appointment?service=${encodeURIComponent(title)}`}
-          className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-semibold text-xs flex items-center justify-between transition-colors"
-        >
-          <span>Book Now</span>
-          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-        </Link>
+        <div className="mt-auto flex items-center gap-3 pt-1">
+          <button
+            type="button"
+            onClick={() => onViewMore?.(service)}
+            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full border-2 border-primary px-3 py-2.5 text-xs font-bold text-primary transition-colors hover:bg-primary hover:text-white cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          >
+            <Eye className="w-3.5 h-3.5 shrink-0" />
+            <span>View More</span>
+          </button>
+          <Link
+            href={bookingUrl}
+            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2.5 text-xs font-bold text-white transition-colors hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          >
+            <span>Book Now</span>
+            <ArrowRight className="w-3.5 h-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </div>
       </div>
-    </motion.div>
+    </motion.article>
   );
 };
 
 export default ServiceCard;
-

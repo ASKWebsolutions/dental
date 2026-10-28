@@ -204,3 +204,23 @@ model FounderSpotlight {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model BlogPost {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  slug          String        @unique
+  excerpt       String
+  content       String
+  category      String
+  tags          String[]      // Native Mongo String array
+  coverImageId  String?
+  coverImageUrl String?
+  coverImageAlt String?
+  author        String?
+  featured      Boolean       @default(false)
+  status        ContentStatus @default(draft)
+  displayOrder  Int           @default(0)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}

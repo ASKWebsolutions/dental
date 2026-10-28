@@ -116,7 +116,12 @@ export const ServicesHero: React.FC<ServicesHeroProps> = ({ initialServices }) =
         </Container>
       </section>
 
-      <ServicesGrid services={filteredServices} onReset={clearSearch} searchQuery={searchQuery} />
+      <ServicesGrid
+        key={searchQuery || 'all'}
+        services={filteredServices}
+        onReset={clearSearch}
+        searchQuery={searchQuery}
+      />
     </>
   );
 };

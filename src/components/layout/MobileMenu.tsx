@@ -1,13 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { X, Phone, Mail, MapPin } from 'lucide-react';
+import { X, Phone, Mail, MapPin, ChevronDown } from 'lucide-react';
 import { NavLink } from '@/types';
 import { siteConfig } from '@/data/siteConfig';
-import Button from '../ui/Button';
+import { cn } from '@/lib/utils';
+import { ClinicSettings } from '@/types/settings';
 
 import WhatsAppIcon from '../ui/WhatsAppIcon';
 
@@ -15,11 +16,12 @@ interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   links: NavLink[];
-  settings?: any;
+  settings?: ClinicSettings | null;
 }
 
 export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, settings }) => {
   const pathname = usePathname();
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const overlayVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
@@ -92,35 +94,97 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, 
               <motion.nav variants={containerVariants} className="flex flex-col gap-4 text-center">
                 {links.map((link) => {
                   const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+                  const children = link.children ?? [];
+                  const isSubmenuOpen = openSubmenu === link.label;
                   return (
                     <motion.div key={link.href} variants={itemVariants}>
-                      <Link
-                        href={link.href}
-                        onClick={onClose}
-                        className={`relative flex flex-col items-center justify-center py-2 text-base font-semibold tracking-wide font-sans transition-all duration-200 ${
-                          isActive ? 'text-[#003b1b]' : 'text-slate-600 hover:text-[#003b1b]'
-                        }`}
-                      >
-                        <span className="relative z-10">{link.label}</span>
-                        {isActive && (
-                          <motion.span
-                            layoutId="activeMobileDrawerIndicator"
-                            className="mt-0.5 text-[#003b1b] flex items-center justify-center shrink-0"
-                            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                          >
-                            <svg
-                              width="18"
-                              height="8"
-                              viewBox="0 0 20 10"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-3.5 h-1.5 fill-current"
+                      <div className="flex items-center justify-center gap-1">
+                        <Link
+                          href={link.href}
+                          onClick={onClose}
+                          className={`relative flex flex-col items-center justify-center py-2 text-base font-semibold tracking-wide font-sans transition-all duration-200 ${
+                            isActive ? 'text-[#003b1b]' : 'text-slate-600 hover:text-[#003b1b]'
+                          }`}
+                        >
+                          <span className="relative z-10">{link.label}</span>
+                          {isActive && (
+                            <motion.span
+                              layoutId="activeMobileDrawerIndicator"
+                              className="mt-0.5 text-[#003b1b] flex items-center justify-center shrink-0"
+                              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                             >
-                              <path d="M2 0C2 2 1 4 0 5C3 6 4 10 10 10C16 10 17 6 20 5C19 4 18 2 18 0C14 0 13 2 10 2C7 2 6 0 2 0Z" />
-                            </svg>
-                          </motion.span>
+                              <svg
+                                width="18"
+                                height="8"
+                                viewBox="0 0 20 10"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-3.5 h-1.5 fill-current"
+                              >
+                                <path d="M2 0C2 2 1 4 0 5C3 6 4 10 10 10C16 10 17 6 20 5C19 4 18 2 18 0C14 0 13 2 10 2C7 2 6 0 2 0Z" />
+                              </svg>
+                            </motion.span>
+                          )}
+                        </Link>
+
+                        {children.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setOpenSubmenu(isSubmenuOpen ? null : link.label)}
+                            aria-expanded={isSubmenuOpen}
+                            aria-label={
+                              isSubmenuOpen
+                                ? `Hide ${link.label} submenu`
+                                : `Show ${link.label} submenu`
+                            }
+                            className="p-2 -my-2 rounded-full text-slate-500 hover:text-[#003b1b] hover:bg-slate-100 transition-colors cursor-pointer"
+                          >
+                            <ChevronDown
+                              className={cn(
+                                'w-4 h-4 transition-transform duration-200',
+                                isSubmenuOpen && 'rotate-180'
+                              )}
+                            />
+                          </button>
                         )}
-                      </Link>
+                      </div>
+
+                      {/* Services submenu */}
+                      {children.length > 0 && (
+                        <AnimatePresence initial={false}>
+                          {isSubmenuOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.25, ease: 'easeInOut' }}
+                              className="overflow-hidden"
+                            >
+                              <ul className="flex flex-col gap-1 pt-3 pb-1">
+                                {children.map((child) => {
+                                  const isChildActive = pathname === child.href;
+                                  return (
+                                    <li key={child.href}>
+                                      <Link
+                                        href={child.href}
+                                        onClick={onClose}
+                                        className={cn(
+                                          'block w-full rounded-xl px-3 py-2.5 text-center text-sm font-medium transition-colors',
+                                          isChildActive
+                                            ? 'bg-primary/10 text-primary font-bold'
+                                            : 'text-slate-500 hover:text-[#003b1b] hover:bg-slate-50'
+                                        )}
+                                      >
+                                        {child.label}
+                                      </Link>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      )}
                     </motion.div>
                   );
                 })}

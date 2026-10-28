@@ -35,11 +35,11 @@ export async function PATCH(request: Request, segmentData: { params: Params }) {
 
   try {
     const body = await request.json();
-    
-    // Check if it is a quick update or a full edit update
-    const isQuick = body.status !== undefined || body.featured !== undefined;
 
-    if (isQuick) {
+    // Full edit payloads include patientName; quick updates only send status and/or featured
+    const isFullEdit = typeof body.patientName === 'string';
+
+    if (!isFullEdit) {
       const result = quickUpdateSchema.safeParse(body);
       if (!result.success) {
         return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });

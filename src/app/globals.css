@@ -335,6 +335,13 @@ html::-webkit-scrollbar {
   display: none;
 }
 
+/* ---- Smooth In-Page Anchor Scrolling ---- */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* ---- Hide Scrollbar (Services Carousel) ---- */
 .no-scrollbar {
   scrollbar-width: none;

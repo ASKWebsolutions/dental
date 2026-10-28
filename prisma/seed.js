@@ -201,17 +201,6 @@ async function main() {
       bulletsJson: JSON.stringify(['Instant Smile Makeover', 'Custom-Matched Shade']),
       featured: true,
     },
-    {
-      title: 'X-Ray Facility',
-      shortDescription: 'On-site digital X-ray imaging for accurate diagnosis and treatment planning.',
-      description:
-        "Accurate diagnosis starts with a clear picture — literally. Our on-site digital X-ray facility allows us to examine what's happening beneath the surface: hidden decay, bone health, impacted teeth, infections, and more, all without the wait or inconvenience of an outside referral. Digital X-rays also use significantly less radiation than traditional film X-rays, making them a fast, safe, and essential part of thorough treatment planning for nearly every procedure we offer.",
-      slug: 'x-ray-facility',
-      iconName: 'Sparkles',
-      imagePath: null,
-      bulletsJson: JSON.stringify(['On-Site & Convenient', 'Accurate Diagnostics']),
-      featured: false,
-    },
   ];
 
   for (const s of servicesData) {

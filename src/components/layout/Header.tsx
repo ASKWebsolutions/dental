@@ -1,22 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { createElement, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, Phone, Calendar } from 'lucide-react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { Menu, Phone, Calendar, ChevronDown, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { navLinks } from '@/data/navLinks';
-import { siteConfig } from '@/data/siteConfig';
 import Logo from '../ui/Logo';
 import Container from '../ui/Container';
-import Button from '../ui/Button';
 import MobileMenu from './MobileMenu';
-import WhatsAppIcon from '../ui/WhatsAppIcon';
 import { cn } from '@/lib/utils';
+import { ClinicSettings } from '@/types/settings';
+import { getServiceIcon } from '@/lib/serviceIcons';
 
-export const Header: React.FC<{ settings?: any }> = ({ settings }) => {
+export const Header: React.FC<{ settings?: ClinicSettings | null }> = ({ settings }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const pathname = usePathname();
 
   const x = useMotionValue(0);
@@ -78,40 +78,180 @@ export const Header: React.FC<{ settings?: any }> = ({ settings }) => {
           <nav className="hidden lg:flex items-center gap-8 relative shrink-0">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href));
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className={cn(
-                    'relative flex flex-col items-center py-2 text-xs sm:text-sm tracking-wide transition-colors font-sans',
-                    isActive
-                      ? 'text-[#003b1b] font-bold'
-                      : 'text-gray-600 hover:text-[#003b1b] font-medium'
-                  )}
-                >
-                  {/* Nav Link Text */}
-                  <span>{link.label}</span>
+              const children = link.children ?? [];
 
-                  {/* Half-Tooth Icon - Rendered DIRECTLY beneath text label */}
-                  {isActive && (
-                    <div className="absolute top-full -mt-0.5 flex items-center justify-center pointer-events-none">
-                      <svg
-                        width="16"
-                        height="8"
-                        viewBox="0 0 20 10"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="text-[#003b1b]"
+              if (children.length === 0) {
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className={cn(
+                      'relative flex flex-col items-center py-2 text-xs sm:text-sm tracking-wide transition-colors font-sans',
+                      isActive
+                        ? 'text-[#003b1b] font-bold'
+                        : 'text-gray-600 hover:text-[#003b1b] font-medium'
+                    )}
+                  >
+                    {/* Nav Link Text */}
+                    <span>{link.label}</span>
+
+                    {/* Half-Tooth Icon - Rendered DIRECTLY beneath text label */}
+                    {isActive && (
+                      <div className="absolute top-full -mt-0.5 flex items-center justify-center pointer-events-none">
+                        <svg
+                          width="16"
+                          height="8"
+                          viewBox="0 0 20 10"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="text-[#003b1b]"
+                        >
+                          {/* Precise Top Half Molar Crest Path */}
+                          <path
+                            d="M2 10C2 6 3.5 1 6.5 1C8.5 1 9.5 3 10 3C10.5 3 11.5 1 13.5 1C16.5 1 18 6 18 10H2Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </div>
+                    )}
+                  </Link>
+                );
+              }
+
+              /* Parent link with dropdown (e.g. Services) */
+              const isDropdownOpen = openDropdown === link.label;
+              return (
+                <div
+                  key={link.label}
+                  className="relative"
+                  onMouseEnter={() => setOpenDropdown(link.label)}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                  onFocus={() => setOpenDropdown(link.label)}
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+                      setOpenDropdown(null);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') setOpenDropdown(null);
+                  }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={() => setOpenDropdown(null)}
+                    className={cn(
+                      'relative flex flex-col items-center -mx-2.5 px-2.5 py-2 rounded-full text-xs sm:text-sm tracking-wide transition-colors font-sans',
+                      isDropdownOpen && 'bg-primary/10',
+                      isActive
+                        ? 'text-[#003b1b] font-bold'
+                        : 'text-gray-600 hover:text-[#003b1b] font-medium'
+                    )}
+                  >
+                    <span className="flex items-center gap-1">
+                      {link.label}
+                      <ChevronDown
+                        className={cn(
+                          'w-3.5 h-3.5 transition-transform duration-200',
+                          isDropdownOpen && 'rotate-180'
+                        )}
+                      />
+                    </span>
+
+                    {isActive && (
+                      <div className="absolute top-full -mt-0.5 flex items-center justify-center pointer-events-none">
+                        <svg
+                          width="16"
+                          height="8"
+                          viewBox="0 0 20 10"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="text-[#003b1b]"
+                        >
+                          <path
+                            d="M2 10C2 6 3.5 1 6.5 1C8.5 1 9.5 3 10 3C10.5 3 11.5 1 13.5 1C16.5 1 18 6 18 10H2Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </div>
+                    )}
+                  </Link>
+
+                  {/* Dropdown Panel */}
+                  <AnimatePresence>
+                    {isDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="absolute top-full left-1/2 -translate-x-1/2 pt-4 z-50 origin-top"
                       >
-                        {/* Precise Top Half Molar Crest Path */}
-                        <path
-                          d="M2 10C2 6 3.5 1 6.5 1C8.5 1 9.5 3 10 3C10.5 3 11.5 1 13.5 1C16.5 1 18 6 18 10H2Z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                </Link>
+                        <div className="w-[560px] rounded-3xl bg-white border border-slate-200/80 shadow-[0_28px_70px_-24px_rgba(0,59,27,0.4)] p-3">
+                          {/* Panel header */}
+                          <div className="flex items-center justify-between px-3 pt-1 pb-2.5 mb-2 border-b border-slate-100">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">
+                              All Treatments
+                            </span>
+                            <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold text-primary">
+                              {children.length} Services
+                            </span>
+                          </div>
+
+                          {/* Service items */}
+                          <div className="grid grid-cols-2 gap-1">
+                            {children.map((child) => {
+                              const isChildActive = pathname === child.href;
+                              const ChildIcon = getServiceIcon(child.label);
+                              return (
+                                <Link
+                                  key={child.href}
+                                  href={child.href}
+                                  onClick={() => setOpenDropdown(null)}
+                                  className={cn(
+                                    'group/item flex items-center gap-2.5 rounded-2xl px-3 py-2.5 text-xs font-sans leading-snug transition-all duration-200',
+                                    isChildActive
+                                      ? 'bg-primary/10 text-primary font-bold shadow-[inset_0_0_0_1px_rgba(0,59,27,0.08)]'
+                                      : 'text-slate-600 font-medium hover:bg-primary/5 hover:text-primary'
+                                  )}
+                                >
+                                  <span
+                                    className={cn(
+                                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-colors',
+                                      isChildActive
+                                        ? 'bg-primary text-white'
+                                        : 'bg-bg-alt text-primary group-hover/item:bg-primary group-hover/item:text-white'
+                                    )}
+                                  >
+                                    {createElement(ChildIcon, { className: 'h-4 w-4' })}
+                                  </span>
+                                  <span className="min-w-0 flex-1">{child.label}</span>
+                                  <ArrowRight
+                                    className={cn(
+                                      'h-3.5 w-3.5 shrink-0 transition-all duration-200',
+                                      isChildActive
+                                        ? 'opacity-60'
+                                        : 'opacity-0 -translate-x-1 group-hover/item:opacity-60 group-hover/item:translate-x-0'
+                                    )}
+                                  />
+                                </Link>
+                              );
+                            })}
+                          </div>
+
+                          {/* Panel footer */}
+                          <Link
+                            href="/services"
+                            onClick={() => setOpenDropdown(null)}
+                            className="mt-2 flex items-center justify-between rounded-2xl bg-bg-alt px-4 py-3 text-xs font-bold text-primary transition-colors hover:bg-primary hover:text-white"
+                          >
+                            <span>View All Services</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </Link>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               );
             })}
           </nav>

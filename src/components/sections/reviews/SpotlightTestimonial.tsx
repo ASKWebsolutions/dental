@@ -43,7 +43,7 @@ export const SpotlightTestimonial: React.FC = () => {
 
             {/* Author meta */}
             <div className="flex items-center gap-3 pt-2">
-              <div className="w-10 h-10 rounded-md bg-[#d8e3dc] flex items-center justify-center text-[#003b1b] font-bold text-xs">
+              <div className="w-10 h-10 rounded-full bg-[#d8e3dc] flex items-center justify-center text-[#003b1b] font-bold text-xs">
                 EV
               </div>
               <div>

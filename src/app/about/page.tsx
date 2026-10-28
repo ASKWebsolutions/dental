@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import React from 'react';
 import AboutHero from '@/components/sections/about/AboutHero';
 import AboutTimeline from '@/components/sections/about/Timeline';
-import TechBento from '@/components/sections/about/TechBento';
 import Visionaries from '@/components/sections/about/Visionaries';
 import AboutCTA from '@/components/sections/about/AboutCTA';
 
@@ -17,7 +16,6 @@ export default function AboutPage() {
     <>
       <AboutHero />
       <AboutTimeline />
-      <TechBento />
       <Visionaries />
       <AboutCTA />
     </>
